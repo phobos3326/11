@@ -86,4 +86,16 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
+ /*   implementation(project.dependencies.platform(libs.koin.bom))
+  *//*  implementation(libs.koin.core)
+    implementation(libs.koin.androidx.compose)*//*
+
+   */
+
+
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.core.viewmodel.v400)
+
+
 }

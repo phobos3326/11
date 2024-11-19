@@ -1,4 +1,4 @@
-package com.example.cinematest
+package com.example.cinematest.ui.fragments
 
 import androidx.lifecycle.ViewModel
 

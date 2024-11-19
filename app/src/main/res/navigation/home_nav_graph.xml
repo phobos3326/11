@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.cinematest.FilmFragment"
+        android:name="com.example.cinematest.ui.fragments.FilmFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_film" />
 
