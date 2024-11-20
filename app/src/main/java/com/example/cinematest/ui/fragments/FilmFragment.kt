@@ -1,16 +1,20 @@
 package com.example.cinematest.ui.fragments
 
+import android.os.Build
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.calculateStartPadding
 
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,8 +30,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.cinematest.R
 import com.example.cinematest.ui.theme.CinemaTestTheme
 import com.example.cinematest.ui.theme.MyTextStyles
@@ -52,10 +59,10 @@ class FilmFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        /*  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
               (activity as? AppCompatActivity)?.window?.statusBarColor =
                   context?.let { ContextCompat.getColor(it, R.color.navy) }!!
-          }*/
+          }
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -67,15 +74,22 @@ class FilmFragment : Fragment() {
 
 
                     Scaffold(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            //.fillMaxWidth()
                     ) { innerPadding ->
+                        Box(modifier = Modifier.padding(innerPadding)) {
+
+
                         Column(
+
                             modifier = Modifier
                                 .padding(innerPadding)
 
+
                         ) {
                             CustomActionBar(
-                                title = "My Title",
+                                title = stringResource(R.string.films),
 
                                 // onBackPress = { /* Handle back press */ }
                             )
@@ -85,6 +99,7 @@ class FilmFragment : Fragment() {
                                 text = "Helloo55555"
                             )
                         }
+                    }
                     }
 
 
@@ -102,11 +117,11 @@ fun CustomActionBar(
     //onBackPress: () -> Unit
 ) {
 
-    val appBarColor = CinemaTestTheme {
 
-    }
     TopAppBar(
         modifier = Modifier
+            .fillMaxWidth()
+
             .padding(0.dp)
             .height(56.dp)
             .shadow(
@@ -115,24 +130,17 @@ fun CustomActionBar(
                 ambientColor = Color(0x24000000)
             ),
         colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Navy),
+
         title = {
-            Box(
-
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(0.dp),
-                        contentAlignment = Alignment.Center,
-            )
-
-
-            {
 
 
                 Text(
-                    text = stringResource(R.string.films),
-                    style = MyTextStyles.myTextStyle
+                    text = title,
+                    style = MyTextStyles.myTextStyle,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center // Центрирование текста
                 )
-            }
+
 
         },
         /*navigationIcon = {
@@ -146,8 +154,6 @@ fun CustomActionBar(
 }
 
 
-
-
 @Preview(
     device = "id:pixel_7a", showSystemUi = true,
 
@@ -159,7 +165,7 @@ fun preview() {
     //ImageWithOverlay()
     //FilmListItem1()
 
-    CustomActionBar(title = "название")
+    //CustomActionBar(title = "название")
     /*Text(modifier = Modifier
         .size(50.dp)
         , text = "Helloo5555",
