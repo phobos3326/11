@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -91,6 +92,8 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.core.viewmodel.v400)
     implementation(libs.insert.koin.koin.android)
+    runtimeOnly(libs.koin.compose)
+    implementation(libs.koin.compose.viewmodel)
   //  implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1") // for Lifecycle support
 
 

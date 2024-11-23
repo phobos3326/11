@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class ModelCinema(
     @Json(name = "films")
-    var films: List<Film?>?
+    var films: List<Film>
 ) {
     @JsonClass(generateAdapter = true)
     data class Film(
