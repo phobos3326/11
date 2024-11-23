@@ -45,6 +45,6 @@ object MyTextStyles {
         fontWeight = FontWeight(500),
         letterSpacing = 0.15.sp,
         textAlign = TextAlign.Center,
-        color = Color.White
+        color = Color.Black
     )
 }

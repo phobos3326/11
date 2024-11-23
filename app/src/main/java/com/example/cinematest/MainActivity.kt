@@ -1,16 +1,12 @@
 package com.example.cinematest
 
+import android.graphics.Color
 import android.os.Bundle
-import android.widget.FrameLayout
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.fragment.app.commit
 import com.example.cinematest.databinding.ActivityMainBinding
-import com.example.cinematest.ui.fragments.FilmFragment
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,17 +21,40 @@ class MainActivity : AppCompatActivity() {
             setContentView(view)
 
 
-            /*setupActionBarWithNavController(navController, appBarConfiguration)
-            navView.setupWithNavController(navController)*/
+
+      /*      fun getStatusBarHeight(): Int {
+                var statusBarHeight = 0
+                val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+                if (resourceId > 0) {
+                    statusBarHeight = resources.getDimensionPixelSize(resourceId)
+                }
+                return statusBarHeight
+
+            }
+
+            val statusBarHeight: Int = getStatusBarHeight()
+
+            // Create a new view that will cover the status bar.
+            val statusBarView = View(this)
+            statusBarView.layoutParams =
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight)
+            statusBarView.setBackgroundColor(getResources().getColor(R.color.navy))
+
+            // Add the status bar view to the window.
+            val window = window
+            window.addContentView(
+                statusBarView,
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight)
+            )*/
+
 
 
         }
 
 
-
-
 }
 
+/*
 @Composable
 fun Greeting(name: String) {
     Text(text = "Hello $name!")
@@ -65,4 +84,4 @@ fun MyApp() {
 
 
     }
-}
+}*/

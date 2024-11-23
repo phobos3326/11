@@ -86,16 +86,38 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
- /*   implementation(project.dependencies.platform(libs.koin.bom))
-  *//*  implementation(libs.koin.core)
-    implementation(libs.koin.androidx.compose)*//*
-
-   */
-
 
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.core.viewmodel.v400)
+    implementation(libs.insert.koin.koin.android)
+
+ //   implementation (libs.koin.android.viewmodel)
+    //implementation (libs.koin.android)
+
+    // https://mavenlibs.com/maven/dependency/com.squareup.moshi/moshi
+    implementation(libs.moshi)
+    implementation (libs.moshi.kotlin)
+    implementation(libs.converter.moshi)
+    ksp(libs.moshi.kotlin.codegen)
+
+    implementation (libs.okhttp3.okhttp)
+    implementation (libs.okhttp3.logging.interceptor)
+    implementation(libs.logging.interceptor)
+
+    implementation (libs.gson)
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+
+    /**
+     * An OkHttp interceptor which logs HTTP request and response data.
+     */
+    implementation(libs.okhttp3.logging.interceptor)
+
+    //Glide
+    implementation (libs.glide)
+    // Skip this if you don't want to use integration libraries or configure Glide.
+    annotationProcessor (libs.compiler)
 
 
 }
