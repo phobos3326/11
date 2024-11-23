@@ -7,10 +7,11 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.http.GET
 
 class RepositoryCinema {
 
-    private val BASE_URL = "https://s3-eu-west-1.amazonaws.com/sequeniatesttask/films.json"
+    private val BASE_URL = "https://s3-eu-west-1.amazonaws.com/sequeniatesttask/"
 
     suspend fun getFilm(): ModelCinema {
         return retrofit.films()
@@ -39,6 +40,7 @@ class RepositoryCinema {
         .create(ApiInterfaceCinema::class.java)
 
     interface ApiInterfaceCinema {
+        @GET("films.json")
         suspend fun films(): ModelCinema
     }
 
