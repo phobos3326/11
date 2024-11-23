@@ -91,8 +91,10 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.core.viewmodel.v400)
     implementation(libs.insert.koin.koin.android)
+  //  implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1") // for Lifecycle support
 
- //   implementation (libs.koin.android.viewmodel)
+
+    //   implementation (libs.koin.android.viewmodel)
     //implementation (libs.koin.android)
 
     // https://mavenlibs.com/maven/dependency/com.squareup.moshi/moshi

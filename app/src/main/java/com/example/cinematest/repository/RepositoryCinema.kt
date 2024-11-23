@@ -1,4 +1,4 @@
-package com.example.cinematest.Repositoy
+package com.example.cinematest.repository
 
 import com.example.cinematest.entity.ModelCinema
 import com.squareup.moshi.Moshi
@@ -7,9 +7,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.create
 
-class RepositotyCinema {
+class RepositoryCinema {
 
     private val BASE_URL = "https://s3-eu-west-1.amazonaws.com/sequeniatesttask/films.json"
 

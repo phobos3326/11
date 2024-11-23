@@ -49,11 +49,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.example.cinematest.R
 import com.example.cinematest.ui.theme.CinemaTestTheme
 import com.example.cinematest.ui.theme.MyTextStyles
 import com.example.cinematest.ui.theme.Navy
 import com.example.cinematest.ui.theme.Typography
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FilmFragment : Fragment() {
 
@@ -61,7 +67,7 @@ class FilmFragment : Fragment() {
         fun newInstance() = FilmFragment()
     }
 
-    private val viewModel: FilmViewModel by viewModels()
+    private val viewModel: FilmViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,18 +80,26 @@ class FilmFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-              (activity as? AppCompatActivity)?.window?.statusBarColor =
-                  context?.let { ContextCompat.getColor(it, R.color.navy) }!!
-          }
+
+
+        viewLifecycleOwner.lifecycleScope.launch(start = CoroutineStart.DEFAULT  ) {
+            viewModel.getFilm()
+        }
+
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            (activity as? AppCompatActivity)?.window?.statusBarColor =
+                context?.let { ContextCompat.getColor(it, R.color.navy) }!!
+        }
 
         return ComposeView(requireContext()).apply {
             setContent {
                 CinemaTestTheme(
-                        darkTheme = false,
+                    darkTheme = false,
                     dynamicColor = true,
 
-                    ){
+                    ) {
                     SmallTopAppBarExample("Фильмы")
                 }
 
@@ -127,11 +141,10 @@ class FilmFragment : Fragment() {
                     }*/
 
 
-                }
             }
         }
     }
-
+}
 
 
 /*@OptIn(ExperimentalMaterial3Api::class)
@@ -179,7 +192,7 @@ fun CustomActionBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SmallTopAppBarExample( title: String) {
+fun SmallTopAppBarExample(title: String) {
     Scaffold(
 
         topBar = {
@@ -193,20 +206,23 @@ fun SmallTopAppBarExample( title: String) {
                     colorResource(id = R.color.navy),
                     titleContentColor = MaterialTheme.colorScheme.primary,
 
-                ),
+                    ),
                 title = {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
 
-                        .wrapContentHeight(),
-                        contentAlignment = Alignment.Center){
+                            .wrapContentHeight(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
                             text = title,
 
                             style = Typography.titleLarge,
                             modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center)
-                }
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
                 }
             )
@@ -230,7 +246,8 @@ fun ScrollContent(innerPadding: PaddingValues) {
         items(range.count()) { index ->
             Text(
                 style = MyTextStyles.myTextStyle,
-                text = "- List item number ${index + 1}")
+                text = "- List item number ${index + 1}"
+            )
         }
     }
 }
@@ -246,7 +263,7 @@ fun preview() {
     //ImageWithOverlay()
     //FilmListItem1()
 
-   // CustomActionBar(title = "название")
+    // CustomActionBar(title = "название")
     /*Text(modifier = Modifier
         .size(50.dp)
         , text = "Helloo5555",
