@@ -124,5 +124,7 @@ dependencies {
     // Skip this if you don't want to use integration libraries or configure Glide.
     annotationProcessor (libs.compiler)
 
+    implementation (libs.coil.compose)
+
 
 }

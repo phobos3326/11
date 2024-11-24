@@ -31,8 +31,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -70,6 +72,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
+import coil.compose.rememberImagePainter
 import com.example.cinematest.R
 import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.ui.theme.CinemaTestTheme
@@ -176,16 +179,16 @@ fun SmallTopAppBarExample(title: String) {
 @Composable
 fun ScrollContent(
     innerPadding: PaddingValues,
-   viewModel: FilmViewModel
+    viewModel: FilmViewModel
 ) {
     val range = 1..100
-   val itemState by viewModel.films.collectAsState()
+    val itemState by viewModel.films.collectAsState()
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp),
-        contentPadding = PaddingValues(8.dp),
+            .padding(innerPadding),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
 
@@ -204,8 +207,9 @@ fun FilmItem(
     item: ModelCinema.Film?
 ) {
     Card(
+        shape = RoundedCornerShape(4.dp),
         modifier = Modifier
-            .size(width = 0.dp, height =  270.dp)
+            .size(width = 0.dp, height = 270.dp)
     )
     {
         Column(
@@ -213,10 +217,14 @@ fun FilmItem(
             horizontalAlignment = Alignment.Start
         ) {
             Row {
-                Image(modifier = Modifier
+                Image(
+                    painter = rememberImagePainter(item?.imageUrl),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth(1.toFloat())
+                        .size(0.dp, 222.dp)
+                        .clip(RoundedCornerShape(4.dp)),
 
-                    .size(80.dp, 80.dp),
-                    painter = ColorPainter(Color.DarkGray),
 
                     contentDescription = "Черный квадрат"
                 )
