@@ -53,6 +53,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.cinematest.R
+import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.ui.theme.CinemaTestTheme
 import com.example.cinematest.ui.theme.Typography
 import org.koin.compose.viewmodel.koinViewModel
@@ -112,7 +113,8 @@ class ItemFragment : Fragment() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun filmScreen(title: String) {
+    private fun filmScreen(viewModel: FilmViewModel) {
+        val countValue by viewModel.filmId.observeas
         val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
         Scaffold(
             topBar = {
@@ -120,8 +122,9 @@ class ItemFragment : Fragment() {
                 TopAppBar(
 
                     colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = colorResource(id=R.color.navy),
 
-                        colorResource(id = R.color.navy),
+                       // colorResource(id = R.color.navy),
                         titleContentColor = MaterialTheme.colorScheme.primary,
 
                         ),
@@ -134,7 +137,7 @@ class ItemFragment : Fragment() {
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = title,
+                                text = "",
 
                                 style = Typography.titleLarge,
                                 modifier = Modifier.fillMaxWidth(),
