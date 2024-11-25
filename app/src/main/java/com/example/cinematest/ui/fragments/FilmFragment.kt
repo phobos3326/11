@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 import androidx.compose.material3.Card
@@ -54,6 +56,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -72,7 +75,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.fragment.findNavController
 import coil.compose.rememberImagePainter
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.cinematest.R
 import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.ui.theme.CinemaTestTheme
@@ -86,6 +93,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 class FilmFragment : Fragment() {
+
+    val bundle = Bundle()
 
     companion object {
         fun newInstance() = FilmFragment()
@@ -125,19 +134,19 @@ class FilmFragment : Fragment() {
                     dynamicColor = true,
 
                     ) {
-                    SmallTopAppBarExample("Фильмы")
+                    SmallTopAppBarExample(viewModel,"Фильмы")
                 }
 
 
             }
         }
     }
-}
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SmallTopAppBarExample(title: String) {
+fun SmallTopAppBarExample(viewModel: FilmViewModel, title: String) {
     Scaffold(
 
         topBar = {
@@ -171,7 +180,7 @@ fun SmallTopAppBarExample(title: String) {
             )
         },
     ) { innerPadding ->
-        ScrollContent(innerPadding, viewModel())
+        ScrollContent(innerPadding, viewModel)
     }
 
 }
@@ -210,6 +219,10 @@ fun FilmItem(
         shape = RoundedCornerShape(4.dp),
         modifier = Modifier
             .size(width = 0.dp, height = 270.dp)
+            .clickable{
+                onItemDetailClick(item)
+            }
+
     )
     {
         Column(
@@ -228,6 +241,16 @@ fun FilmItem(
 
                     contentDescription = "Черный квадрат"
                 )
+
+               /* AsyncImage (model = ImageRequest.Builder(LocalContext.current)
+                    .data(item?.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                    //placeholder = painterResource(R.drawable.placeholder),
+                    contentDescription = "stringResource",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.clip(CircleShape),
+                )*/
             }
             Row {
                 item?.name?.let {
@@ -252,6 +275,17 @@ fun FilmItem(
 
 }
 
+
+private fun onItemDetailClick(item: ModelCinema.Film?){
+    item?.id.let {
+        if (it != null) {
+            bundle.putInt("Arg", it)
+        }
+    }
+
+    findNavController().navigate(R.id.action_mainFragment_to_itemFragment, bundle)
+}
+
 @Preview(
     device = "id:pixel_7a", showSystemUi = true,
 
@@ -264,10 +298,12 @@ fun preview() {
     //FilmListItem1()
 
     // CustomActionBar(title = "название")
-    /*Text(modifier = Modifier
+Text(modifier = Modifier
         .size(50.dp)
         , text = "Helloo5555",
-        textAlign = TextAlign.Center)*/
+        textAlign = TextAlign.Center)
+
     //FilmItem()
     //SmallTopAppBarExample("Фильмы")
+}
 }

@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.espresso.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -121,10 +122,12 @@ dependencies {
 
     //Glide
     implementation (libs.glide)
+
     // Skip this if you don't want to use integration libraries or configure Glide.
     annotationProcessor (libs.compiler)
 
     implementation (libs.coil.compose)
+    implementation(libs.coil3.coil.compose)
 
 
 }
