@@ -38,13 +38,37 @@ val Typography = Typography(
 )
 
 object MyTextStyles {
-    val myTextStyle = TextStyle(
-        fontSize = 18.sp,
-        lineHeight = 22.sp,
+    val myTextStyle1 = TextStyle(
+        fontSize = 26.sp,
+        lineHeight = 32.sp,
+        //fontFamily = FontFamily(Font(R.font.Roboto)),
+        fontWeight = FontWeight(700),
+        letterSpacing = 0.1.sp,
+        color = Color(0xFF000000)
+    )
 
-        fontWeight = FontWeight(500),
-        letterSpacing = 0.15.sp,
-        textAlign = TextAlign.Center,
-        color = Color.Black
+    val myTextStyle2 = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 20.sp,
+        //fontFamily = FontFamily(Font(R.font.Roboto)),
+        fontWeight = FontWeight(400),
+        letterSpacing = 0.1.sp,
+        color = Color(0xFF4B4B4B)
+    )
+    val myTextStyle3 = TextStyle(
+        fontSize = 24.sp,
+        lineHeight = 28.sp,
+        //fontFamily = FontFamily(Font(R.font.Roboto)),
+        fontWeight = FontWeight(700),
+        letterSpacing = 0.1.sp,
+        color = Color(0xFF0E3165)
+    )
+    val myTextStyle4 = TextStyle(
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        //fontFamily = FontFamily(Font(R.font.Roboto)),
+        fontWeight = FontWeight(400),
+        letterSpacing = 0.1.sp,
+        color = Color(0xFF000000)
     )
 }

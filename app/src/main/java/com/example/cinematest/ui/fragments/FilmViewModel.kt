@@ -6,14 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.useCase.UseCaseFilm
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FilmViewModel(private val useCaseFilm: UseCaseFilm) : ViewModel() {
     // TODO: Implement the ViewModel
 
-    private var _filmId =MutableLiveData<ModelCinema.Film>()
-    var filmId = _filmId
+
+
+    private var _filmId = MutableStateFlow<ModelCinema.Film?>(null)
+    val filmId: StateFlow<ModelCinema.Film?> = _filmId
 
 
     private var _films = MutableStateFlow<List<ModelCinema.Film>>(emptyList())
@@ -23,6 +26,7 @@ class FilmViewModel(private val useCaseFilm: UseCaseFilm) : ViewModel() {
 
         viewModelScope.launch {
             getFilm()
+
         }
     }
 
@@ -30,10 +34,14 @@ class FilmViewModel(private val useCaseFilm: UseCaseFilm) : ViewModel() {
         _films.value=  useCaseFilm.execFilms()
     }
 
+
+
+
+
     suspend fun getFilmId(id:Int){
         useCaseFilm.execFilms().forEach {  it->
             if (it.id == id){
-                filmId.value=it
+                _filmId.value = it
             }
         }
     }

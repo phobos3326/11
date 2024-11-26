@@ -12,14 +12,21 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+
+
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,9 +36,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,7 +56,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.fragment.findNavController
 import coil.compose.rememberImagePainter
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -55,8 +66,12 @@ import coil3.request.crossfade
 import com.example.cinematest.R
 import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.ui.theme.CinemaTestTheme
+import com.example.cinematest.ui.theme.MyTextStyles
 import com.example.cinematest.ui.theme.Typography
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -67,7 +82,7 @@ private const val ARG_PARAM2 = "param2"
 class ItemFragment : Fragment() {
 
     val bundle = Bundle()
-    val id = arguments?.getInt("Arg")
+
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -96,13 +111,23 @@ class ItemFragment : Fragment() {
         return return ComposeView(requireContext()).apply {
 
             setContent {
+
+
                 val viewModel: FilmViewModel = koinViewModel<FilmViewModel>()
+                lifecycleScope.launch {
+                    val id = arguments?.getInt("Arg")
+                    if (id != null) {
+                        viewModel.getFilmId(id)
+                    }
+                }
+
+
                 CinemaTestTheme(
                     darkTheme = false,
-                    dynamicColor = true,
+                    dynamicColor = false,
 
                     ) {
-                    filmScreen("jijij")
+                    filmScreen(viewModel)
                 }
 
 
@@ -114,30 +139,38 @@ class ItemFragment : Fragment() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun filmScreen(viewModel: FilmViewModel) {
-        val countValue by viewModel.filmId.observeas
+
+
+        val filmDetail = viewModel.filmId.collectAsState().value
+
         val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
         Scaffold(
             topBar = {
 
                 TopAppBar(
 
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = colorResource(id=R.color.navy),
+                    modifier = Modifier
+                        .fillMaxWidth(),
 
-                       // colorResource(id = R.color.navy),
-                        titleContentColor = MaterialTheme.colorScheme.primary,
+
+                    colors = TopAppBarColors(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.onPrimary,
+                        MaterialTheme.colorScheme.onPrimary,
+                        MaterialTheme.colorScheme.onPrimary,
+                        Color.Blue,
 
                         ),
                     title = {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-
+                                .padding(end = 48.dp)
                                 .wrapContentHeight(),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "",
+                                text = filmDetail?.name.toString(),
 
                                 style = Typography.titleLarge,
                                 modifier = Modifier.fillMaxWidth(),
@@ -147,14 +180,17 @@ class ItemFragment : Fragment() {
 
                     },
                     navigationIcon = {
-                        IconButton(onClick = { /* do something */ }) {
+                        IconButton(onClick = {
+
+                            findNavController().navigate(R.id.action_itemFragment_to_mainFragment)
+                        }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Localized description"
+                                contentDescription = "Local55ription"
                             )
                         }
                     },
-                    //  scrollBehavior = scrollBehavior,
+                    scrollBehavior = scrollBehavior,
                 )
             },
 
@@ -175,20 +211,31 @@ class ItemFragment : Fragment() {
         viewModel: FilmViewModel,
         innerPadding: PaddingValues
     ) {
+        val filmDetail = viewModel.filmId.collectAsState().value
         // val itemState by viewModel.films.collectAsState()
+
+
         Column(
-            Modifier.padding(innerPadding)
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
         ) {
-            Row {
+            Row(
+                modifier = Modifier
+                // .height(300.dp)
+                //.padding(start = 16.dp)
+            ) {
 
                 Image(
-                    painter = rememberImagePainter("https://st.kp.yandex.net/images/film_iphone/iphone360_326.jpg"),
-                    contentScale = ContentScale.Crop,
+                    painter = rememberImagePainter(filmDetail?.imageUrl),
+                    alignment = Alignment.Center,
                     modifier = Modifier
-                        .fillMaxWidth(1.toFloat())
-                        .size(0.dp, 222.dp)
-                        .clip(RoundedCornerShape(4.dp)),
 
+                        .fillMaxWidth(1.toFloat())
+                        .size(132.dp, 201.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    contentScale = ContentScale.Fit,
 
                     contentDescription = "Черный квадрат"
                 )
@@ -202,36 +249,79 @@ class ItemFragment : Fragment() {
                   modifier = Modifier.clip(CircleShape),
               )*/
             }
+
             Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                filmDetail?.name?.let {
+                    Text(
+                        text = it,
+                        style = MyTextStyles.myTextStyle1
+
+                    )
+                }
+
+            }
+
+            Row(
+                modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
-                    text = "Между нами горы",
-                    style = TextStyle(
-                        fontSize = 26.sp,
-                        lineHeight = 32.sp,
-                        // fontFamily = FontFamily(Font(R.font.Roboto)),
-                        fontWeight = FontWeight(700),
-                        letterSpacing = 0.1.sp,
-                        color = Color(0xFF000000)
-                    )
+
+                    text = filmDetail?.genres?.joinToString(", ") + ", " + filmDetail?.year,
+
+                    style = MyTextStyles.myTextStyle2
+
+                )
+            }
+
+            Row(
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(
+
+                    text = String.format("%.1f", filmDetail?.rating),
+                    modifier = Modifier.align(Alignment.Bottom),
+                    style = MyTextStyles.myTextStyle3
+
+                )
+                Spacer(modifier = Modifier.padding(start = 8.dp))
+                Text(
+
+                    text = "Кинопоиск",
+                    modifier = Modifier.align(Alignment.Bottom),
+                    style = MyTextStyles.myTextStyle2
+
+
+                )
+            }
+
+            Row(
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(
+
+                    text = filmDetail?.description.toString(),
+
+                    style = MyTextStyles.myTextStyle4
 
                 )
             }
         }
-    }
 
-    @Preview(
-        showSystemUi = true, showBackground = true,
-        device = "spec:width=1080px,height=2340px,dpi=440"
-    )
-    @Composable
-    fun preview1() {
-         Column(
+    }
+}
+
+@Preview(
+    showSystemUi = true, showBackground = true,
+    device = "spec:width=1080px,height=2340px,dpi=440"
+)
+@Composable
+fun preview1() {
+    Column(
         // Modifier.padding(innerPadding)
         Modifier
-            .padding(start = 16.dp, end =16.dp)
+            .padding(start = 16.dp, end = 16.dp)
     ) {
         Row(
             Modifier.fillMaxWidth()
@@ -239,26 +329,28 @@ class ItemFragment : Fragment() {
 
             Image(
                 painter = rememberImagePainter("https://st.kp.yandex.net/images/film_iphone/iphone360_326.jpg"),
-                contentScale = ContentScale.Crop,
+                // contentScale = ContentScale.Inside,
                 alignment = Alignment.Center,
                 modifier = Modifier
                     //.fillMaxWidth(1.toFloat())
-                    .size(132.dp, 201.dp)
-                    .clip(RoundedCornerShape(4.dp)),
+
+                    .width(132.dp)
+                    .height(201.dp),
+                // .clip(RoundedCornerShape(4.dp)),
 
 
                 contentDescription = "Черный квадрат"
             )
 
-              /*AsyncImage (model = ImageRequest.Builder(LocalContext.current)
-                  .data("https://st.kp.yandex.net/images/film_iphone/iphone360_326.jpg")
-                  .crossfade(true)
-                  .build(),
-              //placeholder = painterResource(R.drawable.placeholder),
-              contentDescription = "stringResource",
-              contentScale = ContentScale.Crop,
-              modifier = Modifier.clip(CircleShape),
-                  )*/
+            /*AsyncImage (model = ImageRequest.Builder(LocalContext.current)
+                .data("https://st.kp.yandex.net/images/film_iphone/iphone360_326.jpg")
+                .crossfade(true)
+                .build(),
+            //placeholder = painterResource(R.drawable.placeholder),
+            contentDescription = "stringResource",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.clip(CircleShape),
+                )*/
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
@@ -280,19 +372,19 @@ class ItemFragment : Fragment() {
     }
 
 
-    }
+}
 
 
-    /*companion object {
-    */
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ItemFragment.
-     *//*
+/*companion object {
+*/
+/**
+ * Use this factory method to create a new instance of
+ * this fragment using the provided parameters.
+ *
+ * @param param1 Parameter 1.
+ * @param param2 Parameter 2.
+ * @return A new instance of fragment ItemFragment.
+ *//*
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
@@ -305,4 +397,3 @@ class ItemFragment : Fragment() {
     }*/
 
 
-}

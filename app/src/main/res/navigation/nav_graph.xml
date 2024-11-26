@@ -18,6 +18,10 @@
         android:id="@+id/itemFragment"
         android:name="com.example.cinematest.ui.fragments.ItemFragment"
         android:label="fragment_item"
-        tools:layout="@layout/fragment_item" />
+        tools:layout="@layout/fragment_item" >
+        <action
+            android:id="@+id/action_itemFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
     </navigation>
 

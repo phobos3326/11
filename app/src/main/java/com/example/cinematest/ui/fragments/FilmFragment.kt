@@ -42,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -53,11 +54,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -131,10 +134,10 @@ class FilmFragment : Fragment() {
                 val viewModel: FilmViewModel = koinViewModel<FilmViewModel>()
                 CinemaTestTheme(
                     darkTheme = false,
-                    dynamicColor = true,
+                    dynamicColor = false,
 
                     ) {
-                    SmallTopAppBarExample(viewModel,"Фильмы")
+                    SmallTopAppBarExample(viewModel, "Фильмы")
                 }
 
 
@@ -143,167 +146,219 @@ class FilmFragment : Fragment() {
     }
 
 
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun SmallTopAppBarExample(viewModel: FilmViewModel, title: String) {
+        Scaffold(
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SmallTopAppBarExample(viewModel: FilmViewModel, title: String) {
-    Scaffold(
+            topBar = {
 
-        topBar = {
+                TopAppBar(
 
-            TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        //colorResource(id = R.color.navy),
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
 
-                colors = TopAppBarDefaults.topAppBarColors(
+                        ),
+                    title = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(),
 
-                    colorResource(id = R.color.navy),
-                    titleContentColor = MaterialTheme.colorScheme.primary,
+                            // .wrapContentHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = title,
 
-                    ),
-                title = {
-                    Box(
+                                style = Typography.titleLarge,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                    }
+                )
+            },
+        ) { innerPadding ->
+            ScrollContent(innerPadding, viewModel)
+        }
+
+    }
+
+    @Composable
+    fun ScrollContent(
+        innerPadding: PaddingValues,
+        viewModel: FilmViewModel
+    ) {
+        val range = 1..100
+        val itemState by viewModel.films.collectAsState()
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+        ) {
+
+            items(itemState) { index ->
+                FilmItem(index)
+            }
+
+        }
+    }
+
+
+    @Composable
+    fun FilmItem(
+        item: ModelCinema.Film?
+    ) {
+        Card(
+            shape = RoundedCornerShape(4.dp),
+            modifier = Modifier
+                .size(width = 0.dp, height = 270.dp)
+                .clickable {
+                    onItemDetailClick(item)
+                }
+
+        )
+        {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row {
+                    Image(
+                        painter = rememberImagePainter(item?.imageUrl),
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(1.toFloat())
+                            .size(0.dp, 222.dp)
+                            .clip(RoundedCornerShape(4.dp)),
 
-                            .wrapContentHeight(),
-                        contentAlignment = Alignment.Center
-                    ) {
+
+                        contentDescription = "Черный квадрат"
+                    )
+
+                    /* AsyncImage (model = ImageRequest.Builder(LocalContext.current)
+                         .data(item?.imageUrl)
+                         .crossfade(true)
+                         .build(),
+                         //placeholder = painterResource(R.drawable.placeholder),
+                         contentDescription = "stringResource",
+                         contentScale = ContentScale.Crop,
+                         modifier = Modifier.clip(CircleShape),
+                     )*/
+                }
+                Row {
+                    item?.name?.let {
                         Text(
-                            text = title,
-
-                            style = Typography.titleLarge,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
+                            modifier = Modifier,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                lineHeight = 20.sp,
+                                // fontFamily = FontFamily(Font(R.font.roboto_thin)),
+                                fontWeight = FontWeight(700),
+                                letterSpacing = 0.1.sp,
+                                color = Color(0xFF000000)
+                            )
                         )
                     }
-
                 }
-            )
-        },
-    ) { innerPadding ->
-        ScrollContent(innerPadding, viewModel)
-    }
-
-}
-
-@Composable
-fun ScrollContent(
-    innerPadding: PaddingValues,
-    viewModel: FilmViewModel
-) {
-    val range = 1..100
-    val itemState by viewModel.films.collectAsState()
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-
-    ) {
-
-        items(itemState) { index ->
-            FilmItem(index)
+            }
         }
 
     }
-}
 
 
-@Composable
-fun FilmItem(
-    item: ModelCinema.Film?
-) {
-    Card(
-        shape = RoundedCornerShape(4.dp),
-        modifier = Modifier
-            .size(width = 0.dp, height = 270.dp)
-            .clickable{
-                onItemDetailClick(item)
+    private fun onItemDetailClick(item: ModelCinema.Film?) {
+        item?.id.let {
+            if (it != null) {
+                bundle.putInt("Arg", it)
             }
+        }
 
-    )
-    {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Row {
-                Image(
-                    painter = rememberImagePainter(item?.imageUrl),
-                    contentScale = ContentScale.Crop,
+            findNavController().navigate(R.id.action_mainFragment_to_itemFragment, bundle)
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun FilmDetailsScreen(filmName: String, filmDescription: String, filmImage: Painter) {
+        CinemaTestTheme {
+            // Main layout
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                //.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                // TopAppBar
+                TopAppBar(
                     modifier = Modifier
-                        .fillMaxWidth(1.toFloat())
-                        .size(0.dp, 222.dp)
-                        .clip(RoundedCornerShape(4.dp)),
+                        .fillMaxWidth(),
 
+                    title = { Text("Film Details") },
+                    colors = TopAppBarColors(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.onPrimary,
+                        Color.Magenta,
+                        Color.Red,
+                        Color.Blue,
 
-                    contentDescription = "Черный квадрат"
+                        ),
+                    //  contentColor = MaterialTheme.colorScheme.onPrimary
                 )
 
-               /* AsyncImage (model = ImageRequest.Builder(LocalContext.current)
-                    .data(item?.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                    //placeholder = painterResource(R.drawable.placeholder),
-                    contentDescription = "stringResource",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.clip(CircleShape),
-                )*/
-            }
-            Row {
-                item?.name?.let {
-                    Text(
-                        modifier = Modifier,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        text = it,
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 20.sp,
-                            // fontFamily = FontFamily(Font(R.font.roboto_thin)),
-                            fontWeight = FontWeight(700),
-                            letterSpacing = 0.1.sp,
-                            color = Color(0xFF000000)
-                        )
-                    )
-                }
+                // Image
+                Image(
+                    painter = filmImage,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(130.dp, 190.dp)
+                        .padding(top = 16.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+                // Film name
+                Text(
+                    text = filmName,
+                    //style = MaterialTheme.typography.h6,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+
+                // Film description
+                Text(
+                    text = filmDescription,
+                    // style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
         }
     }
 
-}
 
+    @Preview(
+        device = "id:pixel_7a", showSystemUi = true,
 
-private fun onItemDetailClick(item: ModelCinema.Film?){
-    item?.id.let {
-        if (it != null) {
-            bundle.putInt("Arg", it)
-        }
+        )
+    @Composable
+    fun preview() {
+        val filmImage = painterResource(id = R.drawable.ic_launcher_background)
+        FilmDetailsScreen(
+
+            filmName = "Film Title",
+            filmDescription = "This is a description of the film.",
+            filmImage = filmImage
+        )
     }
-
-    findNavController().navigate(R.id.action_mainFragment_to_itemFragment, bundle)
-}
-
-@Preview(
-    device = "id:pixel_7a", showSystemUi = true,
-
-    )
-@Composable
-fun preview() {
-    // SearchBar()
-    // BarkHomeContent()
-    //ImageWithOverlay()
-    //FilmListItem1()
-
-    // CustomActionBar(title = "название")
-Text(modifier = Modifier
-        .size(50.dp)
-        , text = "Helloo5555",
-        textAlign = TextAlign.Center)
-
-    //FilmItem()
-    //SmallTopAppBarExample("Фильмы")
-}
 }
