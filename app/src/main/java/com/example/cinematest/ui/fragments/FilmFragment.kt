@@ -232,10 +232,10 @@ class FilmFragment : Fragment() {
             LazyColumn(
 
                 modifier = Modifier
-                    // .fillMaxWidth()
-                    .wrapContentHeight()
-                    .wrapContentSize(unbounded = false)
-                //.padding(innerPadding)
+                    //.fillMaxWidth()
+                   /* .wrapContentHeight()
+                    .wrapContentSize(unbounded = false)*/
+                .padding(innerPadding)
                 // .wrapContentHeight(),
                 // contentPadding = PaddingValues(16.dp)
             ) {
