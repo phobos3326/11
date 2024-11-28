@@ -5,14 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.useCase.UseCaseFilm
+import com.example.cinematest.useCase.getGenresUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.internal.immutableListOf
 
-class FilmViewModel(private val useCaseFilm: UseCaseFilm) : ViewModel() {
-    // TODO: Implement the ViewModel
-
+class FilmViewModel(
+    private val useCaseFilm: UseCaseFilm,
+    private val getGenresUseCase: getGenresUseCase
+) : ViewModel() {
 
 
     private var _filmId = MutableStateFlow<ModelCinema.Film?>(null)
@@ -22,25 +25,47 @@ class FilmViewModel(private val useCaseFilm: UseCaseFilm) : ViewModel() {
     private var _films = MutableStateFlow<List<ModelCinema.Film>>(emptyList())
     var films = _films.asStateFlow()
 
+    private var _genre = MutableStateFlow<List< String?>>(emptyList())
+    var genre = _genre.asStateFlow()
+
     init {
 
         viewModelScope.launch {
             getFilm()
+            getFilmGenre()
 
         }
     }
 
     suspend fun getFilm() {
-        _films.value=  useCaseFilm.execFilms()
+        _films.value = useCaseFilm.execFilms()
+
     }
 
 
+    private suspend fun getFilmGenre(){
+       _genre.value= getGenresUseCase.getFilmGenre()
+    }
+
+/*    suspend fun getFilmGenre() {
+        var listgenres = mutableListOf<String?>()
+        useCaseFilm.execFilms().forEach {
+            it.genres?.let { it1 ->
+                listgenres.addAll(it1)
+            }
 
 
+        }
+        //listgenres.distinct().toList()
+        val distinct = LinkedHashSet(listgenres)
+        println(distinct)
 
-    suspend fun getFilmId(id:Int){
-        useCaseFilm.execFilms().forEach {  it->
-            if (it.id == id){
+    }*/
+
+
+    suspend fun getFilmId(id: Int) {
+        useCaseFilm.execFilms().forEach { it ->
+            if (it.id == id) {
                 _filmId.value = it
             }
         }

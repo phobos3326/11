@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.withInfiniteAnimationFrameNanos
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,6 +69,7 @@ import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.ui.theme.CinemaTestTheme
 import com.example.cinematest.ui.theme.MyTextStyles
 import com.example.cinematest.ui.theme.Typography
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -114,16 +116,20 @@ class ItemFragment : Fragment() {
 
 
                 val viewModel: FilmViewModel = koinViewModel<FilmViewModel>()
-                lifecycleScope.launch {
+                lifecycleScope.launch() {
                     val id = arguments?.getInt("Arg")
                     if (id != null) {
                         viewModel.getFilmId(id)
                     }
                 }
 
-
+                val darkTheme = isSystemInDarkTheme()
                 CinemaTestTheme(
-                    darkTheme = false,
+
+
+
+
+                    darkTheme = darkTheme,
                     dynamicColor = false,
 
                     ) {

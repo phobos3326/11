@@ -9,11 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.isSystemInDarkTheme
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+
+
+
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -26,16 +33,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +60,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -132,8 +145,9 @@ class FilmFragment : Fragment() {
 
             setContent {
                 val viewModel: FilmViewModel = koinViewModel<FilmViewModel>()
+                val darkTheme = isSystemInDarkTheme()
                 CinemaTestTheme(
-                    darkTheme = false,
+                    darkTheme = darkTheme,
                     dynamicColor = false,
 
                     ) {
@@ -182,10 +196,107 @@ class FilmFragment : Fragment() {
                 )
             },
         ) { innerPadding ->
-            ScrollContent(innerPadding, viewModel)
+            Column(
+
+                modifier = Modifier
+                   /* .verticalScroll(rememberScrollState())
+                    .weight(1f, false)*/
+
+                  /*  .fillMaxSize()
+
+                    .padding(innerPadding)*/
+
+                // .verticalScroll(rememberScrollState())
+            ) {
+                genreList(innerPadding, viewModel)
+
+                ScrollContent(innerPadding, viewModel)
+
+            }
+
+
         }
 
     }
+
+
+    @Composable
+    fun genreList(
+        innerPadding: PaddingValues,
+        viewModel: FilmViewModel
+    ) {
+        val itemState by viewModel.genre.collectAsState()
+        Box(
+
+        ) {
+            LazyColumn(
+
+                modifier = Modifier
+                    // .fillMaxWidth()
+                    .wrapContentHeight()
+                    .wrapContentSize(unbounded = false)
+                //.padding(innerPadding)
+                // .wrapContentHeight(),
+                // contentPadding = PaddingValues(16.dp)
+            ) {
+
+                items(
+                    itemState
+                ) { genre ->
+                    genre?.let {
+                        genreCard(genre)
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    @Composable
+    fun genreCard(item: String) {
+
+        Card(
+            modifier = Modifier
+                .height(40.dp)
+                .fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+
+
+        ) {
+
+            Row(
+
+                modifier = Modifier
+                    .fillMaxWidth(),
+                //.padding(6.dp)
+                // verticalAlignment = CenterVertically,
+            )
+
+            {
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        // textAlign = TextAlign.Justify,
+                        //modifier = Modifier,
+                        //.align( CenterVertically    )
+                        //  .fillMaxSize(),
+                        //  .padding(start = 16.dp),
+                        //color = MyTextStyles.myTextStyle3,
+                        text = item,
+
+
+                        )
+                }
+
+            }
+
+        }
+
+    }
+
 
     @Composable
     fun ScrollContent(
@@ -197,8 +308,8 @@ class FilmFragment : Fragment() {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+                .fillMaxSize(),
+            // .padding(innerPadding),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -217,9 +328,13 @@ class FilmFragment : Fragment() {
     fun FilmItem(
         item: ModelCinema.Film?
     ) {
+
         Card(
+
+
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier
+                .background(Color.White)
                 .size(width = 0.dp, height = 270.dp)
                 .clickable {
                     onItemDetailClick(item)
@@ -285,66 +400,66 @@ class FilmFragment : Fragment() {
             }
         }
 
-            findNavController().navigate(R.id.action_mainFragment_to_itemFragment, bundle)
+        findNavController().navigate(R.id.action_mainFragment_to_itemFragment, bundle)
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun FilmDetailsScreen(filmName: String, filmDescription: String, filmImage: Painter) {
-        CinemaTestTheme {
-            // Main layout
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                //.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                // TopAppBar
-                TopAppBar(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+    /*  @OptIn(ExperimentalMaterial3Api::class)
+      @Composable
+      fun FilmDetailsScreen(filmName: String, filmDescription: String, filmImage: Painter) {
+          CinemaTestTheme {
+              // Main layout
+              Column(
+                  modifier = Modifier
+                      .fillMaxSize(),
+                  //.padding(16.dp),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Top
+              ) {
+                  // TopAppBar
+                  TopAppBar(
+                      modifier = Modifier
+                          .fillMaxWidth(),
 
-                    title = { Text("Film Details") },
-                    colors = TopAppBarColors(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.onPrimary,
-                        Color.Magenta,
-                        Color.Red,
-                        Color.Blue,
+                      title = { Text("Film Details") },
+                      colors = TopAppBarColors(
+                          MaterialTheme.colorScheme.primary,
+                          MaterialTheme.colorScheme.onPrimary,
+                          Color.Magenta,
+                          Color.Red,
+                          Color.Blue,
 
-                        ),
-                    //  contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                          ),
+                      //  contentColor = MaterialTheme.colorScheme.onPrimary
+                  )
 
-                // Image
-                Image(
-                    painter = filmImage,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(130.dp, 190.dp)
-                        .padding(top = 16.dp),
-                    contentScale = ContentScale.Crop
-                )
+                  // Image
+                  Image(
+                      painter = filmImage,
+                      contentDescription = null,
+                      modifier = Modifier
+                          .size(130.dp, 190.dp)
+                          .padding(top = 16.dp),
+                      contentScale = ContentScale.Crop
+                  )
 
-                // Film name
-                Text(
-                    text = filmName,
-                    //style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+                  // Film name
+                  Text(
+                      text = filmName,
+                      //style = MaterialTheme.typography.h6,
+                      color = MaterialTheme.colorScheme.onBackground,
+                      modifier = Modifier.padding(top = 16.dp)
+                  )
 
-                // Film description
-                Text(
-                    text = filmDescription,
-                    // style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-        }
-    }
+                  // Film description
+                  Text(
+                      text = filmDescription,
+                      // style = MaterialTheme.typography.body2,
+                      color = MaterialTheme.colorScheme.onBackground,
+                      modifier = Modifier.padding(top = 8.dp)
+                  )
+              }
+          }
+      }*/
 
 
     @Preview(
@@ -354,11 +469,11 @@ class FilmFragment : Fragment() {
     @Composable
     fun preview() {
         val filmImage = painterResource(id = R.drawable.ic_launcher_background)
-        FilmDetailsScreen(
+        /* FilmDetailsScreen(
 
-            filmName = "Film Title",
-            filmDescription = "This is a description of the film.",
-            filmImage = filmImage
-        )
+             filmName = "Film Title",
+             filmDescription = "This is a description of the film.",
+             filmImage = filmImage
+         )*/
     }
 }

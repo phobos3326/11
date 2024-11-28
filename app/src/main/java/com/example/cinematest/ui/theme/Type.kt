@@ -44,7 +44,7 @@ object MyTextStyles {
         //fontFamily = FontFamily(Font(R.font.Roboto)),
         fontWeight = FontWeight(700),
         letterSpacing = 0.1.sp,
-        color = Color(0xFF000000)
+        //color = Color(0xFF000000)
     )
 
     val myTextStyle2 = TextStyle(
@@ -53,7 +53,7 @@ object MyTextStyles {
         //fontFamily = FontFamily(Font(R.font.Roboto)),
         fontWeight = FontWeight(400),
         letterSpacing = 0.1.sp,
-        color = Color(0xFF4B4B4B)
+       // color = Color(0xFF4B4B4B)
     )
     val myTextStyle3 = TextStyle(
         fontSize = 24.sp,
@@ -69,6 +69,6 @@ object MyTextStyles {
         //fontFamily = FontFamily(Font(R.font.Roboto)),
         fontWeight = FontWeight(400),
         letterSpacing = 0.1.sp,
-        color = Color(0xFF000000)
+       // color = Color(0xFF000000)
     )
 }
