@@ -1,5 +1,7 @@
 package com.example.cinematest.ui.fragments
 
+import android.annotation.SuppressLint
+import android.graphics.drawable.shapes.Shape
 import android.os.Build
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -8,8 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
@@ -22,6 +29,7 @@ import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateStartPadding
 
 
@@ -39,16 +47,22 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -57,17 +71,25 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalProvider
@@ -83,7 +105,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -164,6 +188,8 @@ class FilmFragment : Fragment() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SmallTopAppBarExample(viewModel: FilmViewModel, title: String) {
+
+        val listState = rememberLazyListState()
         Scaffold(
 
             topBar = {
@@ -199,26 +225,21 @@ class FilmFragment : Fragment() {
         ) { innerPadding ->
             val itemState by viewModel.genre.collectAsState()
             val itemStateFilm by viewModel.films.collectAsState()
-            LazyColumn(
 
+             val selectedIndex=remember { mutableIntStateOf(-1) }
+            LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                /* .verticalScroll(rememberScrollState())
-                 .weight(1f, false)*/
 
-                /*  .fillMaxSize()
-
-                  .padding(innerPadding)*/
-
-                // .verticalScroll(rememberScrollState())
             ) {
 
                 item {
                     Box(
                         Modifier
                             .fillMaxSize(),
-                            //.height(50.dp),
+                        //.height(50.dp),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
@@ -230,22 +251,85 @@ class FilmFragment : Fragment() {
                     }
 
                 }
-                //  val itemState by viewModel.genre.collectAsState()
+
+                itemsIndexed(
+                    itemState
+                )
 
 
-                    items(
-                        itemState
-                    )
+                {index, genre ->
+
+                    Card(
+                        modifier = Modifier
+                            .height(40.dp)
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = selectedIndex.value==index,
+                                onClick = {selectedIndex.value = if (selectedIndex.value!=index)
+                                    index else -1}
 
 
-                    { genre ->
-                        genre?.let {
+                            ),
+                        colors =  if ((selectedIndex.value == index))
+                            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+                        else
+                            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
 
-                            genreCard(genre)
+
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                        )
+
+                        {
+                            Box(
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(start = 16.dp),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                genre?.let {
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        text = it,
+                                    )
+                                }
+                            }
+
                         }
+
                     }
+                   // genre?.let { genreCard(genre) }
 
 
+                }
+                /* var isSelected: Boolean = false
+
+                 itemsIndexed(itemState ) { index, item ->
+                     var selectedIndex by remember { mutableStateOf(index) }
+
+                     Box(modifier = Modifier
+
+                         .clickable {
+                             isSelected = index == selectedIndex
+                             println(isSelected)
+                         }
+                         .background(
+                             color = if (isSelected) {
+                                 MaterialTheme.colorScheme.secondary
+                             } else {
+                                 MaterialTheme.colorScheme.primary
+                             }
+                         )
+                     ) {
+
+
+                         if (item != null) {
+                             genreCard(item, isSelected)
+                         }
+                     }*/
 
 
 
@@ -260,18 +344,24 @@ class FilmFragment : Fragment() {
 
                 item {
                     LazyVerticalGrid(
+
                         columns = GridCells.Fixed(2),
                         modifier = Modifier
-                            .height(300.dp)
+                            .height(1000.dp)
                             .fillMaxSize(),
+                        //.verticalScroll(rememberScrollState(-1)),
                         // .padding(innerPadding),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
 
+
                     ) {
 
-                        items(itemStateFilm) { index ->
+                        items(
+                            itemStateFilm
+                        ) { index ->
+
                             FilmItem(index)
                         }
 
@@ -287,24 +377,24 @@ class FilmFragment : Fragment() {
     }
 
 
-/*
-    @Composable
-    fun genreList(
-        innerPadding: PaddingValues,
-        viewModel: FilmViewModel
-    ) {
-        val itemState by viewModel.genre.collectAsState()
-        Box(
-
+    /*
+        @Composable
+        fun genreList(
+            innerPadding: PaddingValues,
+            viewModel: FilmViewModel
         ) {
-            LazyColumn(
+            val itemState by viewModel.genre.collectAsState()
+            Box(
 
-                modifier = Modifier
-                    // .height(300.dp)
-                    //.fillMaxWidth()
-                    */
-/* .wrapContentHeight()
-                     .wrapContentSize(unbounded = false)*//*
+            ) {
+                LazyColumn(
+
+                    modifier = Modifier
+                        // .height(300.dp)
+                        //.fillMaxWidth()
+                        */
+    /* .wrapContentHeight()
+                         .wrapContentSize(unbounded = false)*//*
 
                     .padding(innerPadding)
                 // .wrapContentHeight(),
@@ -326,42 +416,34 @@ class FilmFragment : Fragment() {
 */
 
     @Composable
-    fun genreCard(item: String) {
+    fun genreCard(
+        item: String,
+
+        ) {
 
         Card(
             modifier = Modifier
                 .height(40.dp)
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
-
+                .fillMaxWidth()
 
         ) {
-
             Row(
-
                 modifier = Modifier
                     .fillMaxWidth(),
-                //.padding(6.dp)
-                // verticalAlignment = CenterVertically,
             )
 
             {
                 Box(
-                    Modifier.fillMaxSize()
+                    Modifier
+                        .fillMaxSize()
                         .padding(start = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
-                        // textAlign = TextAlign.Justify,
-                        //modifier = Modifier,
-                        //.align( CenterVertically    )
-                        //  .fillMaxSize(),
-                        //  .padding(start = 16.dp),
-                        //color = MyTextStyles.myTextStyle3,
+                        modifier = Modifier
+                            .fillMaxWidth(),
                         text = item,
-
-
-                        )
+                    )
                 }
 
             }
@@ -371,31 +453,31 @@ class FilmFragment : Fragment() {
     }
 
 
-/*    @Composable
-    fun ScrollContent(
-        innerPadding: PaddingValues,
-        viewModel: FilmViewModel
-    ) {
-        val range = 1..100
-        val itemState by viewModel.films.collectAsState()
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .height(300.dp)
-                .fillMaxSize(),
-            // .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-
+    /*    @Composable
+        fun ScrollContent(
+            innerPadding: PaddingValues,
+            viewModel: FilmViewModel
         ) {
+            val range = 1..100
+            val itemState by viewModel.films.collectAsState()
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .height(300.dp)
+                    .fillMaxSize(),
+                // .padding(innerPadding),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
 
-            items(itemState) { index ->
-                FilmItem(index)
+            ) {
+
+                items(itemState) { index ->
+                    FilmItem(index)
+                }
+
             }
-
-        }
-    }*/
+        }*/
 
 
     @Composable
@@ -408,13 +490,15 @@ class FilmFragment : Fragment() {
 
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier
-                .background(Color.White)
+                // .background(MaterialTheme.colorScheme.secondary)
                 .size(width = 0.dp, height = 270.dp)
+
                 .clickable {
                     onItemDetailClick(item)
-                }
+                },
 
-        )
+
+            )
         {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
@@ -486,5 +570,6 @@ class FilmFragment : Fragment() {
     fun preview() {
         //   val filmImage = painterResource(id = R.drawable.ic_launcher_background)
         //  StackedLazyColumns()
+
     }
 }
