@@ -1,5 +1,6 @@
 package com.example.cinematest.ui.fragments
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,7 +26,7 @@ class FilmViewModel(
     private var _films = MutableStateFlow<List<ModelCinema.Film>>(emptyList())
     var films = _films.asStateFlow()
 
-    private var _genre = MutableStateFlow<List< String?>>(emptyList())
+    private var _genre = MutableStateFlow<List<String?>>(emptyList())
     var genre = _genre.asStateFlow()
 
     init {
@@ -33,7 +34,7 @@ class FilmViewModel(
         viewModelScope.launch {
             getFilm()
             getFilmGenre()
-
+            filterFilm()
         }
     }
 
@@ -43,24 +44,35 @@ class FilmViewModel(
     }
 
 
-    private suspend fun getFilmGenre(){
-       _genre.value= getGenresUseCase.getFilmGenre()
+    suspend fun filterFilm() {
+        val genre = "драма"
+
+        var filmsList = useCaseFilm.execFilms()
+        filmsList.filter {
+            it.genres!!.equals(genre)
+        }
+        Log.e("TAG", "$filmsList")
+
     }
 
-/*    suspend fun getFilmGenre() {
-        var listgenres = mutableListOf<String?>()
-        useCaseFilm.execFilms().forEach {
-            it.genres?.let { it1 ->
-                listgenres.addAll(it1)
+    private suspend fun getFilmGenre() {
+        _genre.value = getGenresUseCase.getFilmGenre()
+    }
+
+    /*    suspend fun getFilmGenre() {
+            var listgenres = mutableListOf<String?>()
+            useCaseFilm.execFilms().forEach {
+                it.genres?.let { it1 ->
+                    listgenres.addAll(it1)
+                }
+
+
             }
+            //listgenres.distinct().toList()
+            val distinct = LinkedHashSet(listgenres)
+            println(distinct)
 
-
-        }
-        //listgenres.distinct().toList()
-        val distinct = LinkedHashSet(listgenres)
-        println(distinct)
-
-    }*/
+        }*/
 
 
     suspend fun getFilmId(id: Int) {
