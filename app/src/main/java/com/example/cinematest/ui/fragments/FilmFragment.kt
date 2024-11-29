@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
 
-
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -48,6 +47,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -70,6 +70,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalProvider
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -196,21 +197,87 @@ class FilmFragment : Fragment() {
                 )
             },
         ) { innerPadding ->
-            Column(
+            val itemState by viewModel.genre.collectAsState()
+            val itemStateFilm by viewModel.films.collectAsState()
+            LazyColumn(
 
                 modifier = Modifier
-                   /* .verticalScroll(rememberScrollState())
-                    .weight(1f, false)*/
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                /* .verticalScroll(rememberScrollState())
+                 .weight(1f, false)*/
 
-                  /*  .fillMaxSize()
+                /*  .fillMaxSize()
 
-                    .padding(innerPadding)*/
+                  .padding(innerPadding)*/
 
                 // .verticalScroll(rememberScrollState())
             ) {
-                genreList(innerPadding, viewModel)
 
-                ScrollContent(innerPadding, viewModel)
+                item {
+                    Box(
+                        Modifier
+                            .fillMaxSize(),
+                            //.height(50.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            color = MaterialTheme.colorScheme.primary,
+                            text = "First Section Header",
+
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+
+                }
+                //  val itemState by viewModel.genre.collectAsState()
+
+
+                    items(
+                        itemState
+                    )
+
+
+                    { genre ->
+                        genre?.let {
+
+                            genreCard(genre)
+                        }
+                    }
+
+
+
+
+
+
+                item {
+                    Text(
+                        color = MaterialTheme.colorScheme.primary,
+                        text = "Second Section Header",
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+
+                item {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier
+                            .height(300.dp)
+                            .fillMaxSize(),
+                        // .padding(innerPadding),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+                    ) {
+
+                        items(itemStateFilm) { index ->
+                            FilmItem(index)
+                        }
+
+                    }
+                }
+
 
             }
 
@@ -220,6 +287,7 @@ class FilmFragment : Fragment() {
     }
 
 
+/*
     @Composable
     fun genreList(
         innerPadding: PaddingValues,
@@ -232,10 +300,13 @@ class FilmFragment : Fragment() {
             LazyColumn(
 
                 modifier = Modifier
+                    // .height(300.dp)
                     //.fillMaxWidth()
-                   /* .wrapContentHeight()
-                    .wrapContentSize(unbounded = false)*/
-                .padding(innerPadding)
+                    */
+/* .wrapContentHeight()
+                     .wrapContentSize(unbounded = false)*//*
+
+                    .padding(innerPadding)
                 // .wrapContentHeight(),
                 // contentPadding = PaddingValues(16.dp)
             ) {
@@ -252,6 +323,7 @@ class FilmFragment : Fragment() {
         }
 
     }
+*/
 
     @Composable
     fun genreCard(item: String) {
@@ -275,7 +347,8 @@ class FilmFragment : Fragment() {
 
             {
                 Box(
-                    Modifier.fillMaxSize(),
+                    Modifier.fillMaxSize()
+                        .padding(start = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
@@ -298,7 +371,7 @@ class FilmFragment : Fragment() {
     }
 
 
-    @Composable
+/*    @Composable
     fun ScrollContent(
         innerPadding: PaddingValues,
         viewModel: FilmViewModel
@@ -308,6 +381,7 @@ class FilmFragment : Fragment() {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
+                .height(300.dp)
                 .fillMaxSize(),
             // .padding(innerPadding),
             contentPadding = PaddingValues(16.dp),
@@ -321,7 +395,7 @@ class FilmFragment : Fragment() {
             }
 
         }
-    }
+    }*/
 
 
     @Composable
@@ -403,64 +477,6 @@ class FilmFragment : Fragment() {
         findNavController().navigate(R.id.action_mainFragment_to_itemFragment, bundle)
     }
 
-    /*  @OptIn(ExperimentalMaterial3Api::class)
-      @Composable
-      fun FilmDetailsScreen(filmName: String, filmDescription: String, filmImage: Painter) {
-          CinemaTestTheme {
-              // Main layout
-              Column(
-                  modifier = Modifier
-                      .fillMaxSize(),
-                  //.padding(16.dp),
-                  horizontalAlignment = Alignment.CenterHorizontally,
-                  verticalArrangement = Arrangement.Top
-              ) {
-                  // TopAppBar
-                  TopAppBar(
-                      modifier = Modifier
-                          .fillMaxWidth(),
-
-                      title = { Text("Film Details") },
-                      colors = TopAppBarColors(
-                          MaterialTheme.colorScheme.primary,
-                          MaterialTheme.colorScheme.onPrimary,
-                          Color.Magenta,
-                          Color.Red,
-                          Color.Blue,
-
-                          ),
-                      //  contentColor = MaterialTheme.colorScheme.onPrimary
-                  )
-
-                  // Image
-                  Image(
-                      painter = filmImage,
-                      contentDescription = null,
-                      modifier = Modifier
-                          .size(130.dp, 190.dp)
-                          .padding(top = 16.dp),
-                      contentScale = ContentScale.Crop
-                  )
-
-                  // Film name
-                  Text(
-                      text = filmName,
-                      //style = MaterialTheme.typography.h6,
-                      color = MaterialTheme.colorScheme.onBackground,
-                      modifier = Modifier.padding(top = 16.dp)
-                  )
-
-                  // Film description
-                  Text(
-                      text = filmDescription,
-                      // style = MaterialTheme.typography.body2,
-                      color = MaterialTheme.colorScheme.onBackground,
-                      modifier = Modifier.padding(top = 8.dp)
-                  )
-              }
-          }
-      }*/
-
 
     @Preview(
         device = "id:pixel_7a", showSystemUi = true,
@@ -468,12 +484,7 @@ class FilmFragment : Fragment() {
         )
     @Composable
     fun preview() {
-        val filmImage = painterResource(id = R.drawable.ic_launcher_background)
-        /* FilmDetailsScreen(
-
-             filmName = "Film Title",
-             filmDescription = "This is a description of the film.",
-             filmImage = filmImage
-         )*/
+        //   val filmImage = painterResource(id = R.drawable.ic_launcher_background)
+        //  StackedLazyColumns()
     }
 }
