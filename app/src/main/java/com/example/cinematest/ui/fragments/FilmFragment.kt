@@ -183,7 +183,7 @@ class FilmFragment : Fragment() {
 
 
                 { index, genre ->
-                    genreCard(selectedIndex, index, genre)
+                    genreCard(selectedIndex, index, genre, viewModel)
 
                 }
 
@@ -235,7 +235,8 @@ class FilmFragment : Fragment() {
     private fun genreCard(
         selectedIndex: MutableIntState,
         index: Int,
-        genre: String?
+        genre: String?,
+        viewModel: FilmViewModel
     ) {
         Card(
             modifier = Modifier
@@ -247,6 +248,13 @@ class FilmFragment : Fragment() {
                         selectedIndex.value = if (selectedIndex.value != index)
                             index else -1
 
+                        genre?.let {
+                            if (selectedIndex.value == index){
+                                viewModel.getGenre(it)
+                            }else{
+                                viewModel.getGenre(null)
+                            }
+                        }
 
                     }
 
@@ -284,7 +292,6 @@ class FilmFragment : Fragment() {
 
         }
     }
-
 
 
     @Composable

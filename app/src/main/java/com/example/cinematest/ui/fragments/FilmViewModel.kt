@@ -1,7 +1,5 @@
 package com.example.cinematest.ui.fragments
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinematest.entity.ModelCinema
@@ -11,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.internal.immutableListOf
 
 class FilmViewModel(
     private val useCaseFilm: UseCaseFilm,
@@ -29,6 +26,8 @@ class FilmViewModel(
     private var _genre = MutableStateFlow<List<String?>>(emptyList())
     var genre = _genre.asStateFlow()
 
+    private var genre__: String? = null
+
     init {
 
         viewModelScope.launch {
@@ -38,41 +37,35 @@ class FilmViewModel(
         }
     }
 
-    suspend fun getFilm() {
+    private suspend fun getFilm(): List<ModelCinema.Film> {
         _films.value = useCaseFilm.execFilms()
-
+        return useCaseFilm.execFilms()
     }
 
 
-    suspend fun filterFilm() {
-        val genre = "драма"
-
-        var filmsList = useCaseFilm.execFilms()
-        filmsList.filter {
-            it.genres!!.equals(genre)
+    fun getGenre(genre: String?) {
+        genre__ = genre
+        viewModelScope.launch {
+            filterFilm()
         }
-        Log.e("TAG", "$filmsList")
 
+    }
+
+    private suspend fun filterFilm() {
+        val filmsList = getFilm()
+        if (genre__ != null) {
+            val filteredList = filmsList.filter {
+                it.genres!!.contains(genre__)
+            }
+            _films.value = filteredList
+        } else {
+            _films.value = filmsList
+        }
     }
 
     private suspend fun getFilmGenre() {
         _genre.value = getGenresUseCase.getFilmGenre()
     }
-
-    /*    suspend fun getFilmGenre() {
-            var listgenres = mutableListOf<String?>()
-            useCaseFilm.execFilms().forEach {
-                it.genres?.let { it1 ->
-                    listgenres.addAll(it1)
-                }
-
-
-            }
-            //listgenres.distinct().toList()
-            val distinct = LinkedHashSet(listgenres)
-            println(distinct)
-
-        }*/
 
 
     suspend fun getFilmId(id: Int) {
