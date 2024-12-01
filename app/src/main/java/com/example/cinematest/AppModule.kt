@@ -13,7 +13,7 @@ val appModule = module {
     single { RepositoryCinema() }
     single { UseCaseFilm(get()) }
     single { getGenresUseCase(get()) }
-    viewModel { FilmViewModel(get(), get()) }
+    viewModel { FilmViewModel(get(), get(), get(),  get()) }
 }
 
 

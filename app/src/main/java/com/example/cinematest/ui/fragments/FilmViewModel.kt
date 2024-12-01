@@ -1,10 +1,17 @@
 package com.example.cinematest.ui.fragments
 
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinematest.entity.ModelCinema
+import com.example.cinematest.repository.RepositoryCinema
 import com.example.cinematest.useCase.UseCaseFilm
 import com.example.cinematest.useCase.getGenresUseCase
+import dagger.hilt.android.internal.Contexts.getApplication
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,9 +19,13 @@ import kotlinx.coroutines.launch
 
 class FilmViewModel(
     private val useCaseFilm: UseCaseFilm,
-    private val getGenresUseCase: getGenresUseCase
-) : ViewModel() {
+    private val getGenresUseCase: getGenresUseCase,
+    private val repositoryCinema: RepositoryCinema,
+    application: Application
+) : AndroidViewModel(application) {
 
+    private val _state = MutableStateFlow<State>(State.ColdStart)
+    val state = _state.asStateFlow()
 
     private var _filmId = MutableStateFlow<ModelCinema.Film?>(null)
     val filmId: StateFlow<ModelCinema.Film?> = _filmId
@@ -34,6 +45,9 @@ class FilmViewModel(
             getFilm()
             getFilmGenre()
             filterFilm()
+            //start()
+
+            repositoryCinema.getResponse()
         }
     }
 
@@ -72,6 +86,47 @@ class FilmViewModel(
         useCaseFilm.execFilms().forEach { it ->
             if (it.id == id) {
                 _filmId.value = it
+            }
+        }
+    }
+
+
+  /*  private var isConnect = true
+    private fun isNetworkAvailable(context: Context) {
+        viewModelScope.launch {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = cm.activeNetworkInfo
+            if (networkInfo != null && networkInfo.isConnected) {
+                _state.value = State.ColdStart
+                Log.d("TAG", "$isConnect, ${_state.value}")
+                isConnect = true
+            } else {
+                _state.value = State.Error
+                Log.d("TAG", "$isConnect, ${_state.value}")
+                isConnect = false
+            }
+        }
+    }*/
+
+
+    fun start() {
+      //  isNetworkAvailable(getApplication<Application>().applicationContext)
+        viewModelScope.launch() {
+            try {
+                _state.value = State.Wait
+                val response = repositoryCinema.httpClientBuilder
+                //response.
+                /*val user = response.body()
+                val status = response.code()
+                Log.d("TAG", "$status, ${_state.value}")
+                _user.value = user?.results?.first()?.name?.first
+                _userLastName.value = user?.results?.first()?.name?.last
+                _userCode.value = status
+                _userImg.value = user?.results?.first()?.picture?.large*/
+               // _state.value = State.Completed
+             // Log.d("TAG", "$response, ${_state.value}")
+            } catch (e: Exception) {
+                _state.value = State.Error
             }
         }
     }
