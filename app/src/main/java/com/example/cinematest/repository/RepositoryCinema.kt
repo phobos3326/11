@@ -22,18 +22,18 @@ class RepositoryCinema {
 
     }
 
-    suspend fun getResponse(){
-        withContext(Dispatchers.IO) {
-            val response = apiServiceResponse.response()
+    suspend fun getResponse(): Response<ModelCinema> {
 
-            if (response.isSuccessful) {
+          return apiServiceResponse.response()
+
+            /*if (response.isSuccessful) {
                 println("Успешный ответ: ${response.code()}") // Например, 200
                 val data = response // Обрабатываем тело ответа
                 println(data)
             } else {
                 println("Ошибка: ${response.code()}") // Например, 404 или 500
-            }
-        }
+            }*/
+
     }
 
     private val logInterceptor = HttpLoggingInterceptor()

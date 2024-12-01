@@ -42,14 +42,35 @@ class FilmViewModel(
     init {
 
         viewModelScope.launch {
-            getFilm()
+            /*getFilm()
             getFilmGenre()
-            filterFilm()
-            //start()
+            filterFilm()*/
+            start()
 
-            repositoryCinema.getResponse()
+           // repositoryCinema.getResponse()
         }
     }
+
+
+    fun start() {
+        isNetworkAvailable(getApplication<Application>().applicationContext)
+        viewModelScope.launch() {
+            try {
+                _state.value = State.Wait
+                val response = repositoryCinema.getResponse()
+                Log.e("TAG", "$response, ${_state.value}")
+                getFilm()
+                getFilmGenre()
+                filterFilm()
+
+                _state.value = State.Completed
+                Log.e("TAG", "$response, ${_state.value}")
+            } catch (e: Exception) {
+                _state.value = State.Error
+            }
+        }
+    }
+
 
     private suspend fun getFilm(): List<ModelCinema.Film> {
         _films.value = useCaseFilm.execFilms()
@@ -91,44 +112,24 @@ class FilmViewModel(
     }
 
 
-  /*  private var isConnect = true
+    private var isConnect = true
     private fun isNetworkAvailable(context: Context) {
         viewModelScope.launch {
             val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val networkInfo = cm.activeNetworkInfo
             if (networkInfo != null && networkInfo.isConnected) {
                 _state.value = State.ColdStart
-                Log.d("TAG", "$isConnect, ${_state.value}")
+                Log.e("TAG", "$isConnect, ${_state.value}")
                 isConnect = true
             } else {
                 _state.value = State.Error
-                Log.d("TAG", "$isConnect, ${_state.value}")
+                Log.e("TAG", "$isConnect, ${_state.value}")
                 isConnect = false
             }
         }
-    }*/
-
-
-    fun start() {
-      //  isNetworkAvailable(getApplication<Application>().applicationContext)
-        viewModelScope.launch() {
-            try {
-                _state.value = State.Wait
-                val response = repositoryCinema.httpClientBuilder
-                //response.
-                /*val user = response.body()
-                val status = response.code()
-                Log.d("TAG", "$status, ${_state.value}")
-                _user.value = user?.results?.first()?.name?.first
-                _userLastName.value = user?.results?.first()?.name?.last
-                _userCode.value = status
-                _userImg.value = user?.results?.first()?.picture?.large*/
-               // _state.value = State.Completed
-             // Log.d("TAG", "$response, ${_state.value}")
-            } catch (e: Exception) {
-                _state.value = State.Error
-            }
-        }
     }
+
+
+
 
 }
