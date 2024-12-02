@@ -35,16 +35,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
@@ -56,7 +52,6 @@ import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,11 +75,6 @@ import com.example.cinematest.ui.theme.CinemaTestTheme
 import com.example.cinematest.ui.theme.Typography
 import org.koin.compose.viewmodel.koinViewModel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -133,7 +123,7 @@ class FilmFragment : Fragment() {
                     dynamicColor = false,
 
                     ) {
-                    SmallTopAppBarExample(viewModel, "Фильмы")
+                    FilmScreen(viewModel, "Фильмы")
                 }
 
 
@@ -145,7 +135,7 @@ class FilmFragment : Fragment() {
     @SuppressLint("CoroutineCreationDuringComposition")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun SmallTopAppBarExample(viewModel: FilmViewModel, title: String) {
+    fun FilmScreen(viewModel: FilmViewModel, title: String) {
 
         val state by viewModel.state.collectAsState()
 
@@ -157,7 +147,7 @@ class FilmFragment : Fragment() {
 
         val snackbarHostState = remember { SnackbarHostState() }
 
-       /* LaunchedEffect(state) {
+        LaunchedEffect(state) {
             if (state is State.Error){
                 val result =snackbarHostState.showSnackbar(
                         message = "Snackbar",
@@ -174,7 +164,7 @@ class FilmFragment : Fragment() {
                     }
                 }
             }
-        }*/
+        }
 
 
 
@@ -232,12 +222,14 @@ class FilmFragment : Fragment() {
                                    viewModel.start()
                                }
                                SnackbarResult.Dismissed -> {
-                                   viewModel.start()
+                                   //viewModel.start()
                                }
                            }
                        }
                    }
                    is State.ColdStart -> {
+
+
                        lifecycleScope.launch {
                            val result =snackbarHostState.showSnackbar(
                                message = "Snackbar",
@@ -515,7 +507,10 @@ class FilmFragment : Fragment() {
                                 viewModel.getGenre(null)
                             }
                         }
-                        viewModel.start()
+                        lifecycleScope.launch {
+                            //viewModel.start()
+                        }
+
                     }
 
 
@@ -571,7 +566,10 @@ class FilmFragment : Fragment() {
                 .clickable {
 
                     onItemDetailClick(item)
-                    viewModel.start()
+                    lifecycleScope.launch {
+                        viewModel.start()
+                    }
+
                 },
 
 

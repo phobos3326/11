@@ -80,9 +80,13 @@ import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.ui.theme.CinemaTestTheme
 import com.example.cinematest.ui.theme.MyTextStyles
 import com.example.cinematest.ui.theme.Typography
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import javax.inject.Scope
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -128,7 +132,7 @@ class ItemFragment : Fragment() {
 
 
                 val viewModel: FilmViewModel = koinViewModel<FilmViewModel>()
-                viewModel.checkConnect()
+                viewModel.start()
                 lifecycleScope.launch(start = CoroutineStart.DEFAULT) {
                    // viewModel.start()
                     val id = arguments?.getInt("Arg")
@@ -240,7 +244,7 @@ class ItemFragment : Fragment() {
 
             content = { innerpadding ->
 
-                viewModel.checkConnect()
+
                 when (state) {
 
                     is State.Completed -> filmInfo(viewModel, innerpadding)
@@ -260,7 +264,7 @@ class ItemFragment : Fragment() {
                                 }
 
                                 SnackbarResult.Dismissed -> {
-                                    viewModel.start()
+                                    //viewModel.start()
                                 }
                             }
                         }
@@ -397,7 +401,14 @@ fun ErrorSnackbar(
 }
 
 fun onDismiss(viewModel: FilmViewModel) {
-    viewModel.start()
+
+
+            viewModel.start()
+
+
+
+
+
 }
 
 @Composable
