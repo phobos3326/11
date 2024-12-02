@@ -1,5 +1,6 @@
 package com.example.cinematest.ui.fragments
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,18 +32,27 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -98,6 +109,7 @@ class ItemFragment : Fragment() {
         }*/
     }
 
+    @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -116,17 +128,18 @@ class ItemFragment : Fragment() {
 
 
                 val viewModel: FilmViewModel = koinViewModel<FilmViewModel>()
-                lifecycleScope.launch() {
+                viewModel.checkConnect()
+                lifecycleScope.launch(start = CoroutineStart.DEFAULT) {
+                   // viewModel.start()
                     val id = arguments?.getInt("Arg")
                     if (id != null) {
                         viewModel.getFilmId(id)
+
                     }
                 }
 
                 val darkTheme = isSystemInDarkTheme()
                 CinemaTestTheme(
-
-
 
 
                     darkTheme = darkTheme,
@@ -142,14 +155,39 @@ class ItemFragment : Fragment() {
     }
 
 
+    @SuppressLint("CoroutineCreationDuringComposition")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun filmScreen(viewModel: FilmViewModel) {
 
-
+        val state by viewModel.state.collectAsState()
         val filmDetail = viewModel.filmId.collectAsState().value
 
         val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+        val snackbarHostState = remember { SnackbarHostState() }
+
+        LaunchedEffect(state) {
+
+            if (state is State.Error) {
+                val result = snackbarHostState.showSnackbar(
+                    message = "Snackbar",
+                    actionLabel = "Action",
+                    // Defaults to SnackbarDuration.Short
+                    duration = SnackbarDuration.Indefinite
+                )
+                when (result) {
+                    SnackbarResult.ActionPerformed -> {
+                        viewModel.start()
+                    }
+
+                    SnackbarResult.Dismissed -> {
+                        viewModel.start()
+                    }
+                }
+            }
+        }
+
         Scaffold(
             topBar = {
 
@@ -200,15 +238,39 @@ class ItemFragment : Fragment() {
                 )
             },
 
+            content = { innerpadding ->
 
-            ) { innerPadding ->
-            filmInfo(
-                viewModel(),
-                innerPadding
+                viewModel.checkConnect()
+                when (state) {
+
+                    is State.Completed -> filmInfo(viewModel, innerpadding)
+                    is State.Wait -> LoadingIndicator()
+                    is State.Error -> ErrorSnackbar("") { onDismiss(viewModel) }
+                    is State.ColdStart -> {
+                        lifecycleScope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Snackbar",
+                                actionLabel = "Action",
+                                // Defaults to SnackbarDuration.Short
+                                duration = SnackbarDuration.Indefinite
+                            )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> {
+                                    viewModel.start()
+                                }
+
+                                SnackbarResult.Dismissed -> {
+                                    viewModel.start()
+                                }
+                            }
+                        }
+                    }
+                }
+
+            },
+
+
             )
-        }
-
-
     }
 
 
@@ -315,6 +377,36 @@ class ItemFragment : Fragment() {
             }
         }
 
+    }
+}
+
+@Composable
+fun ErrorSnackbar(
+    message: String,
+    onDismiss: () -> Unit
+) {
+    Snackbar(
+        action = {
+            TextButton(onClick = onDismiss) {
+                Text("Попробовать снова")
+            }
+        }
+    ) {
+        Text(text = message)
+    }
+}
+
+fun onDismiss(viewModel: FilmViewModel) {
+    viewModel.start()
+}
+
+@Composable
+fun LoadingIndicator() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
 

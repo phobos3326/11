@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import com.example.cinematest.repository.RepositoryCinema
 import com.example.cinematest.useCase.UseCaseFilm
 import com.example.cinematest.useCase.getGenresUseCase
 import dagger.hilt.android.internal.Contexts.getApplication
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +33,7 @@ class FilmViewModel(
     val filmId: StateFlow<ModelCinema.Film?> = _filmId
 
 
-    private var _films = MutableStateFlow<List<ModelCinema.Film>>(emptyList())
+    private var _films = MutableStateFlow<List<ModelCinema.Film?>>(emptyList())
     var films = _films.asStateFlow()
 
     private var _genre = MutableStateFlow<List<String?>>(emptyList())
@@ -51,30 +53,56 @@ class FilmViewModel(
         }
     }
 
+    private var isConnect = true
+
+    fun checkConnect(){
+        isNetworkAvailable(getApplication<Application>().applicationContext)
+    }
 
     fun start() {
         isNetworkAvailable(getApplication<Application>().applicationContext)
-        viewModelScope.launch() {
-            try {
-                _state.value = State.Wait
-                val response = repositoryCinema.getResponse()
-                Log.e("TAG", "$response, ${_state.value}")
-                getFilm()
-                getFilmGenre()
-                filterFilm()
+        if (isConnect){
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
 
-                _state.value = State.Completed
-                Log.e("TAG", "$response, ${_state.value}")
-            } catch (e: Exception) {
-                _state.value = State.Error
+
+                    _state.value = State.Wait
+                    val response = repositoryCinema.getResponse()
+                    Log.e("TAG", "$response, ${_state.value}")
+
+
+                    _state.value = State.Completed
+                    getFilm()
+                    getFilmGenre()
+                    filterFilm()
+                    Log.e("TAG", "$response, ${_state.value}")
+                } catch (e: Exception) {
+                    _state.value = State.Error
+                }
             }
+        }else{
+            _state.value = State.Error
         }
+
     }
 
 
-    private suspend fun getFilm(): List<ModelCinema.Film> {
-        _films.value = useCaseFilm.execFilms()
+
+    private suspend fun getFilm(): List<ModelCinema.Film?>? {
+    //try {
+
+        useCaseFilm.execFilms().also {
+            if (it != null) {
+                _films.value = it
+            }
+        }
+
+        //return useCaseFilm.execFilms()
+    //}catch (e:Exception){
+       // _state.value = State.Error
+    //}
         return useCaseFilm.execFilms()
+
     }
 
 
@@ -89,12 +117,16 @@ class FilmViewModel(
     private suspend fun filterFilm() {
         val filmsList = getFilm()
         if (genre__ != null) {
-            val filteredList = filmsList.filter {
-                it.genres!!.contains(genre__)
+            val filteredList = filmsList?.filter {
+                it?.genres!!.contains(genre__)
             }
-            _films.value = filteredList
+            if (filteredList != null) {
+                _films.value = filteredList
+            }
         } else {
-            _films.value = filmsList
+            if (filmsList != null) {
+                _films.value = filmsList
+            }
         }
     }
 
@@ -104,15 +136,15 @@ class FilmViewModel(
 
 
     suspend fun getFilmId(id: Int) {
-        useCaseFilm.execFilms().forEach { it ->
-            if (it.id == id) {
+        useCaseFilm.execFilms()?.forEach { it ->
+            if (it?.id == id) {
                 _filmId.value = it
             }
         }
     }
 
 
-    private var isConnect = true
+
     private fun isNetworkAvailable(context: Context) {
         viewModelScope.launch {
             val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

@@ -1,5 +1,6 @@
 package com.example.cinematest.ui.fragments
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -90,6 +91,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 class FilmFragment : Fragment() {
@@ -140,6 +142,7 @@ class FilmFragment : Fragment() {
     }
 
 
+    @SuppressLint("CoroutineCreationDuringComposition")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SmallTopAppBarExample(viewModel: FilmViewModel, title: String) {
@@ -148,19 +151,13 @@ class FilmFragment : Fragment() {
 
         val listState = rememberLazyListState()
 
-      /*  when(state){
-            is State.Wait ->LoadingIndicator()
-            is State.Completed -> FilmScreen(title, viewModel, listState)
-            is State.Error -> ErrorSnackbar(" НЕТ ИНТЕРНЕТА", )
-            is State.ColdStart -> {}
 
-        }*/
 
         val scope = rememberCoroutineScope()
-        //FilmScreen(title, viewModel, listState)
+
         val snackbarHostState = remember { SnackbarHostState() }
 
-        LaunchedEffect(state) {
+       /* LaunchedEffect(state) {
             if (state is State.Error){
                 val result =snackbarHostState.showSnackbar(
                         message = "Snackbar",
@@ -177,7 +174,7 @@ class FilmFragment : Fragment() {
                     }
                 }
             }
-        }
+        }*/
 
 
 
@@ -222,8 +219,42 @@ class FilmFragment : Fragment() {
 
                    is State.Completed -> FilmScreen (title, viewModel, listState, innerpadding)
                    is State.Wait -> LoadingIndicator()
-                   is State.Error -> ErrorSnackbar("message") { viewModel.start() }
-                   is State.ColdStart -> {}
+                   is State.Error -> {
+                       lifecycleScope.launch {
+                           val result =snackbarHostState.showSnackbar(
+                               message = "Snackbar",
+                               actionLabel = "Action",
+                               // Defaults to SnackbarDuration.Short
+                               duration = SnackbarDuration.Indefinite
+                           )
+                           when (result) {
+                               SnackbarResult.ActionPerformed -> {
+                                   viewModel.start()
+                               }
+                               SnackbarResult.Dismissed -> {
+                                   viewModel.start()
+                               }
+                           }
+                       }
+                   }
+                   is State.ColdStart -> {
+                       lifecycleScope.launch {
+                           val result =snackbarHostState.showSnackbar(
+                               message = "Snackbar",
+                               actionLabel = "Action",
+                               // Defaults to SnackbarDuration.Short
+                               duration = SnackbarDuration.Indefinite
+                           )
+                           when (result) {
+                               SnackbarResult.ActionPerformed -> {
+                                   viewModel.start()
+                               }
+                               SnackbarResult.Dismissed -> {
+                                   viewModel.start()
+                               }
+                           }
+                       }
+                   }
                }
 
            },
@@ -392,7 +423,7 @@ class FilmFragment : Fragment() {
                             itemStateFilm
                         ) { index ->
 
-                            FilmItem(index)
+                            FilmItem(index,viewModel)
                         }
 
                     }
@@ -473,6 +504,7 @@ class FilmFragment : Fragment() {
                 .selectable(
                     selected = selectedIndex.value == index,
                     onClick = {
+
                         selectedIndex.value = if (selectedIndex.value != index)
                             index else -1
 
@@ -483,7 +515,7 @@ class FilmFragment : Fragment() {
                                 viewModel.getGenre(null)
                             }
                         }
-
+                        viewModel.start()
                     }
 
 
@@ -524,7 +556,8 @@ class FilmFragment : Fragment() {
 
     @Composable
     fun FilmItem(
-        item: ModelCinema.Film?
+        item: ModelCinema.Film?,
+        viewModel: FilmViewModel
     ) {
 
         Card(
@@ -536,7 +569,9 @@ class FilmFragment : Fragment() {
                 .size(width = 0.dp, height = 270.dp)
 
                 .clickable {
+
                     onItemDetailClick(item)
+                    viewModel.start()
                 },
 
 
