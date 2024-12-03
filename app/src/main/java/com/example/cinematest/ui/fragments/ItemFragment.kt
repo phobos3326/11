@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.core.withInfiniteAnimationFrameNanos
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -38,12 +36,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
@@ -59,9 +55,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,26 +65,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.fragment.findNavController
 import coil.compose.rememberImagePainter
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.example.cinematest.R
-import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.ui.theme.CinemaTestTheme
 import com.example.cinematest.ui.theme.MyTextStyles
 import com.example.cinematest.ui.theme.Typography
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import javax.inject.Scope
-import kotlin.coroutines.CoroutineContext
-import kotlin.math.roundToInt
-import kotlin.math.roundToLong
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -123,37 +108,23 @@ class ItemFragment : Fragment() {
             (activity as? AppCompatActivity)?.window?.statusBarColor =
                 context?.let { ContextCompat.getColor(it, R.color.navy) }!!
         }
-
-
-        // Inflate the layout for this fragment
-        return return ComposeView(requireContext()).apply {
-
+        return ComposeView(requireContext()).apply {
             setContent {
-
-
-                val viewModel: FilmViewModel = koinViewModel<FilmViewModel>()
+                val viewModel = koinViewModel<ItemFragmentViewModel>()
                 viewModel.start()
                 lifecycleScope.launch(start = CoroutineStart.DEFAULT) {
-                   // viewModel.start()
                     val id = arguments?.getInt("Arg")
                     if (id != null) {
                         viewModel.getFilmId(id)
-
                     }
                 }
-
                 val darkTheme = isSystemInDarkTheme()
                 CinemaTestTheme(
-
-
                     darkTheme = darkTheme,
                     dynamicColor = false,
-
-                    ) {
+                ) {
                     filmScreen(viewModel)
                 }
-
-
             }
         }
     }
@@ -162,7 +133,7 @@ class ItemFragment : Fragment() {
     @SuppressLint("CoroutineCreationDuringComposition")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun filmScreen(viewModel: FilmViewModel) {
+    private fun filmScreen(viewModel: ItemFragmentViewModel) {
 
         val state by viewModel.state.collectAsState()
         val filmDetail = viewModel.filmId.collectAsState().value
@@ -244,13 +215,10 @@ class ItemFragment : Fragment() {
 
             content = { innerpadding ->
 
-
                 when (state) {
-
                     is State.Completed -> filmInfo(viewModel, innerpadding)
                     is State.Wait -> LoadingIndicator()
-                    is State.Error -> ErrorSnackbar("") { onDismiss(viewModel) }
-                    is State.ColdStart -> {
+                    is State.Error -> {
                         lifecycleScope.launch {
                             val result = snackbarHostState.showSnackbar(
                                 message = "Snackbar",
@@ -264,15 +232,17 @@ class ItemFragment : Fragment() {
                                 }
 
                                 SnackbarResult.Dismissed -> {
-                                    //viewModel.start()
+
                                 }
                             }
                         }
                     }
+
+                    is State.ColdStart -> {
+                        LoadingIndicator()
+                    }
                 }
-
             },
-
 
             )
     }
@@ -280,12 +250,10 @@ class ItemFragment : Fragment() {
 
     @Composable
     fun filmInfo(
-        viewModel: FilmViewModel,
+        viewModel: ItemFragmentViewModel,
         innerPadding: PaddingValues
     ) {
         val filmDetail = viewModel.filmId.collectAsState().value
-        // val itemState by viewModel.films.collectAsState()
-
 
         Column(
             Modifier
@@ -295,8 +263,6 @@ class ItemFragment : Fragment() {
         ) {
             Row(
                 modifier = Modifier
-                // .height(300.dp)
-                //.padding(start = 16.dp)
             ) {
 
                 Image(
@@ -311,15 +277,6 @@ class ItemFragment : Fragment() {
 
                     contentDescription = "Черный квадрат"
                 )
-                /*  AsyncImage (model = ImageRequest.Builder(LocalContext.current)
-                  .data("https://st.kp.yandex.net/images/film_iphone/iphone360_326.jpg")
-                  .crossfade(true)
-                  .build(),
-                  //placeholder = painterResource(R.drawable.placeholder),
-                  contentDescription = "stringResource",
-                  contentScale = ContentScale.Crop,
-                  modifier = Modifier.clip(CircleShape),
-              )*/
             }
 
             Row(
@@ -329,10 +286,8 @@ class ItemFragment : Fragment() {
                     Text(
                         text = it,
                         style = MyTextStyles.myTextStyle1
-
                     )
                 }
-
             }
 
             Row(
@@ -343,7 +298,6 @@ class ItemFragment : Fragment() {
                     text = filmDetail?.genres?.joinToString(", ") + ", " + filmDetail?.year,
 
                     style = MyTextStyles.myTextStyle2
-
                 )
             }
 
@@ -363,8 +317,6 @@ class ItemFragment : Fragment() {
                     text = "Кинопоиск",
                     modifier = Modifier.align(Alignment.Bottom),
                     style = MyTextStyles.myTextStyle2
-
-
                 )
             }
 
@@ -376,7 +328,6 @@ class ItemFragment : Fragment() {
                     text = filmDetail?.description.toString(),
 
                     style = MyTextStyles.myTextStyle4
-
                 )
             }
         }
@@ -384,32 +335,7 @@ class ItemFragment : Fragment() {
     }
 }
 
-@Composable
-fun ErrorSnackbar(
-    message: String,
-    onDismiss: () -> Unit
-) {
-    Snackbar(
-        action = {
-            TextButton(onClick = onDismiss) {
-                Text("Попробовать снова")
-            }
-        }
-    ) {
-        Text(text = message)
-    }
-}
 
-fun onDismiss(viewModel: FilmViewModel) {
-
-
-            viewModel.start()
-
-
-
-
-
-}
 
 @Composable
 fun LoadingIndicator() {
@@ -441,25 +367,15 @@ fun preview1() {
                 // contentScale = ContentScale.Inside,
                 alignment = Alignment.Center,
                 modifier = Modifier
-                    //.fillMaxWidth(1.toFloat())
 
                     .width(132.dp)
                     .height(201.dp),
-                // .clip(RoundedCornerShape(4.dp)),
 
 
                 contentDescription = "Черный квадрат"
             )
 
-            /*AsyncImage (model = ImageRequest.Builder(LocalContext.current)
-                .data("https://st.kp.yandex.net/images/film_iphone/iphone360_326.jpg")
-                .crossfade(true)
-                .build(),
-            //placeholder = painterResource(R.drawable.placeholder),
-            contentDescription = "stringResource",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.clip(CircleShape),
-                )*/
+
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
@@ -470,7 +386,7 @@ fun preview1() {
                 style = TextStyle(
                     fontSize = 26.sp,
                     lineHeight = 32.sp,
-                    // fontFamily = FontFamily(Font(R.font.Roboto)),
+                     fontFamily = FontFamily(Font(R.font.roboto_thin)),
                     fontWeight = FontWeight(700),
                     letterSpacing = 0.1.sp,
                     color = Color(0xFF000000)
@@ -484,25 +400,5 @@ fun preview1() {
 }
 
 
-/*companion object {
-*/
-/**
- * Use this factory method to create a new instance of
- * this fragment using the provided parameters.
- *
- * @param param1 Parameter 1.
- * @param param2 Parameter 2.
- * @return A new instance of fragment ItemFragment.
- *//*
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ItemFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }*/
 
 

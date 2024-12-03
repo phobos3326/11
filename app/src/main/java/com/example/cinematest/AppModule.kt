@@ -1,7 +1,9 @@
 package com.example.cinematest
 
 import com.example.cinematest.repository.RepositoryCinema
-import com.example.cinematest.ui.fragments.FilmViewModel
+import com.example.cinematest.ui.fragments.FilmFragmentViewModel
+import com.example.cinematest.ui.fragments.ItemFragmentViewModel
+
 import com.example.cinematest.useCase.ConnectivityUseCase
 import com.example.cinematest.useCase.UseCaseFilm
 import com.example.cinematest.useCase.getGenresUseCase
@@ -15,7 +17,8 @@ val appModule = module {
     single { UseCaseFilm(get()) }
     single { getGenresUseCase(get()) }
     single { ConnectivityUseCase(get()) }
-    viewModel { FilmViewModel(get(), get(), get(),  get(), get()) }
+    viewModel { FilmFragmentViewModel(get(), get(), get(),  get(), get()) }
+    viewModel { ItemFragmentViewModel(get(), get(), get()) }
 }
 
 
