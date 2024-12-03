@@ -22,10 +22,11 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Navy,
-    onPrimary = Color.White,
+    primary = Color.White,
+    onPrimary = Color.Black,
     secondary = Yellow,
-    tertiary =  Color.White,
+    tertiary =  Navy,
+    onTertiary = Color.White
 )
 
 @Composable

@@ -191,7 +191,7 @@ class ItemFragment : Fragment() {
                             Text(
                                 text = filmDetail?.name.toString(),
 
-                                style = Typography.titleLarge,
+                                style = MyTextStyles.myTextStyleHeader,
                                 modifier = Modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center
                             )
@@ -285,7 +285,7 @@ class ItemFragment : Fragment() {
                 filmDetail?.name?.let {
                     Text(
                         text = it,
-                        style = MyTextStyles.myTextStyle1
+                        style = MyTextStyles.myTextStyleFilmName
                     )
                 }
             }
@@ -297,7 +297,7 @@ class ItemFragment : Fragment() {
 
                     text = filmDetail?.genres?.joinToString(", ") + ", " + filmDetail?.year,
 
-                    style = MyTextStyles.myTextStyle2
+                    style = MyTextStyles.myTextStyleFilmItem
                 )
             }
 
@@ -308,7 +308,7 @@ class ItemFragment : Fragment() {
 
                     text = String.format("%.1f", filmDetail?.rating),
                     modifier = Modifier.align(Alignment.Bottom),
-                    style = MyTextStyles.myTextStyle3
+                    style = MyTextStyles.myTextStyleRating
 
                 )
                 Spacer(modifier = Modifier.padding(start = 8.dp))
@@ -316,7 +316,7 @@ class ItemFragment : Fragment() {
 
                     text = "Кинопоиск",
                     modifier = Modifier.align(Alignment.Bottom),
-                    style = MyTextStyles.myTextStyle2
+                    style = MyTextStyles.myTextStyleSource
                 )
             }
 
@@ -327,7 +327,7 @@ class ItemFragment : Fragment() {
 
                     text = filmDetail?.description.toString(),
 
-                    style = MyTextStyles.myTextStyle4
+                    style = MyTextStyles.myTextStyleDescription
                 )
             }
         }

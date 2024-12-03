@@ -40,37 +40,85 @@ val Typography = Typography(
 )
 
 object MyTextStyles {
-    val myTextStyle1 = TextStyle(
-        fontSize = 26.sp,
-        lineHeight = 32.sp,
-        fontFamily = FontFamily(Font(R.font.roboto_thin)),
+    val myTextStyleHeader = TextStyle(
+        fontSize = 18.sp,
+        lineHeight = 22.sp,
+        fontFamily = FontFamily(Font(R.font.roboto)),
+        fontWeight = FontWeight(500),
+        letterSpacing = 0.15.sp,
+        textAlign = TextAlign.Center,
+
+       // color = Color(0xFF000000)
+    )
+
+    val myTextStyleHeaderSecond = TextStyle(
+        fontSize = 20.sp,
+        lineHeight = 22.sp,
+        fontFamily = FontFamily(Font(R.font.roboto)),
         fontWeight = FontWeight(700),
         letterSpacing = 0.1.sp,
         //color = Color(0xFF000000)
-    )
-
-    val myTextStyle2 = TextStyle(
-        fontSize = 16.sp,
-        lineHeight = 20.sp,
-        fontFamily = FontFamily(Font(R.font.roboto_thin)),
-        fontWeight = FontWeight(400),
-        letterSpacing = 0.1.sp,
        // color = Color(0xFF4B4B4B)
     )
-    val myTextStyle3 = TextStyle(
+    val myTextStyleGenreItem = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 20.sp,
+        fontFamily = FontFamily(Font(R.font.roboto)),
+        fontWeight = FontWeight(400),
+        letterSpacing = 0.1.sp,
+        //color = Color(0xFF000000)
+    )
+    val myTextStyleFilmItem = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 20.sp,
+        fontFamily = FontFamily(Font(R.font.roboto)),
+        fontWeight = FontWeight(700),
+        letterSpacing = 0.1.sp,
+        //color = Color(0xFF000000)
+       // color = Color(0xFF000000)
+    )
+
+    val myTextStyleFilmName = TextStyle(
+        fontSize = 26.sp,
+        lineHeight = 32.sp,
+        fontFamily = FontFamily(Font(R.font.roboto)),
+        fontWeight = FontWeight(700),
+        letterSpacing = 0.1.sp,
+        color = Color(0xFF000000)
+        // color = Color(0xFF000000)
+    )
+
+    val myTextStyleRating = TextStyle(
         fontSize = 24.sp,
         lineHeight = 28.sp,
-        fontFamily = FontFamily(Font(R.font.roboto_thin)),
+        fontFamily = FontFamily(Font(R.font.roboto)),
         fontWeight = FontWeight(700),
         letterSpacing = 0.1.sp,
         color = Color(0xFF0E3165)
+        // color = Color(0xFF000000)
     )
-    val myTextStyle4 = TextStyle(
+
+    val myTextStyleSource = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 16.sp,
+        fontFamily = FontFamily(Font(R.font.roboto)),
+        fontWeight = FontWeight(500),
+        letterSpacing = 0.1.sp,
+        color = Color(0xFF0E3165)
+        //color = Color(0xFF0E3165)
+        // color = Color(0xFF000000)
+    )
+
+    val myTextStyleDescription = TextStyle(
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        fontFamily = FontFamily(Font(R.font.roboto_thin)),
+        fontFamily = FontFamily(Font(R.font.roboto)),
         fontWeight = FontWeight(400),
         letterSpacing = 0.1.sp,
        // color = Color(0xFF000000)
+        //color = Color(0xFF0E3165)
+        // color = Color(0xFF000000)
     )
+
+
 }

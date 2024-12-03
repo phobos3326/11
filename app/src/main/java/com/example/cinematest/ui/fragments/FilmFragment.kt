@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 
@@ -80,7 +81,9 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Shape
 import androidx.lifecycle.lifecycleScope
+import com.example.cinematest.ui.theme.MyTextStyles
 import kotlinx.coroutines.launch
 
 class FilmFragment : Fragment() {
@@ -141,38 +144,37 @@ class FilmFragment : Fragment() {
         val listState = rememberLazyListState()
 
 
-
         val scope = rememberCoroutineScope()
 
         val snackbarHostState = remember { SnackbarHostState() }
 
-       /* LaunchedEffect(state) {
-            if (state is State.Error){
-                val result =snackbarHostState.showSnackbar(
-                        message = "Snackbar",
-                actionLabel = "Action",
-                // Defaults to SnackbarDuration.Short
-                duration = SnackbarDuration.Indefinite
-                )
-                when (result) {
-                    SnackbarResult.ActionPerformed -> {
-                       viewModel.start()
-                    }
-                    SnackbarResult.Dismissed -> {
+        /* LaunchedEffect(state) {
+             if (state is State.Error){
+                 val result =snackbarHostState.showSnackbar(
+                         message = "Snackbar",
+                 actionLabel = "Action",
+                 // Defaults to SnackbarDuration.Short
+                 duration = SnackbarDuration.Indefinite
+                 )
+                 when (result) {
+                     SnackbarResult.ActionPerformed -> {
                         viewModel.start()
-                    }
-                }
-            }
-        }
-*/
+                     }
+                     SnackbarResult.Dismissed -> {
+                         viewModel.start()
+                     }
+                 }
+             }
+         }
+ */
 
 
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.primary,
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
 
             },
-
 
 
             topBar = {
@@ -180,7 +182,7 @@ class FilmFragment : Fragment() {
                 TopAppBar(
 
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.tertiary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                     title = {
@@ -191,8 +193,8 @@ class FilmFragment : Fragment() {
                         ) {
                             Text(
                                 text = title,
-
-                                style = Typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onTertiary,
+                                style = MyTextStyles.myTextStyleHeader,
                                 modifier = Modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center
                             )
@@ -201,39 +203,41 @@ class FilmFragment : Fragment() {
                     }
                 )
             },
-           content = { innerpadding ->
+            content = { innerpadding ->
 
 
-               when (state) {
+                when (state) {
 
-                   is State.Completed -> FilmScreen (title, viewModel, listState, innerpadding)
-                   is State.Wait -> LoadingIndicator()
-                   is State.Error -> {
-                       lifecycleScope.launch {
-                           val result =snackbarHostState.showSnackbar(
-                               message = "Snackbar",
-                               actionLabel = "Action",
-                               // Defaults to SnackbarDuration.Short
-                               duration = SnackbarDuration.Indefinite
-                           )
-                           when (result) {
-                               SnackbarResult.ActionPerformed -> {
-                                   viewModel.start()
-                               }
-                               SnackbarResult.Dismissed -> {
-                                   //viewModel.start()
-                               }
-                           }
-                       }
-                   }
-                   is State.ColdStart -> {
+                    is State.Completed -> FilmScreen(title, viewModel, listState, innerpadding)
+                    is State.Wait -> LoadingIndicator()
+                    is State.Error -> {
+                        lifecycleScope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Snackbar",
+                                actionLabel = "Action",
+                                // Defaults to SnackbarDuration.Short
+                                duration = SnackbarDuration.Indefinite
+                            )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> {
+                                    viewModel.start()
+                                }
 
-                       LoadingIndicator()
+                                SnackbarResult.Dismissed -> {
+                                    //viewModel.start()
+                                }
+                            }
+                        }
+                    }
 
-                   }
-               }
+                    is State.ColdStart -> {
 
-           },
+                        LoadingIndicator()
+
+                    }
+                }
+
+            },
             modifier = Modifier.fillMaxSize()
         )
 
@@ -245,93 +249,96 @@ class FilmFragment : Fragment() {
         title: String,
         viewModel: FilmFragmentViewModel,
         listState: LazyListState,
-        innerPadding:PaddingValues
+        innerPadding: PaddingValues
     ) {
-       Box(){
+        Box() {
 
-       }
-            val itemState by viewModel.genre.collectAsState()
-            val itemStateFilm by viewModel.films.collectAsState()
+        }
+        val itemState by viewModel.genre.collectAsState()
+        val itemStateFilm by viewModel.films.collectAsState()
 
-            val selectedIndex = remember { mutableIntStateOf(-1) }
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+        val selectedIndex = remember { mutableIntStateOf(-1) }
+        LazyColumn(
 
-            ) {
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.primary)
 
-                item {
-                    Box(
-                        Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            color = MaterialTheme.colorScheme.primary,
-                            text = "First Section Header",
+        ) {
 
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-
-                }
-
-                itemsIndexed(
-                    itemState
-                )
-
-
-                { index, genre ->
-                    genreCard(selectedIndex, index, genre, viewModel)
-
-                }
-
-
-
-
-                item {
+            item {
+                Box(
+                    Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
                     Text(
-                        color = MaterialTheme.colorScheme.primary,
-                        text = "Second Section Header",
+                        style = MyTextStyles.myTextStyleHeaderSecond,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        text = "Жанры",
+
                         modifier = Modifier.padding(16.dp)
+
                     )
                 }
 
-                item {
-                    LazyVerticalGrid(
+            }
 
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier
-                            .height(1000.dp)
-                            .fillMaxSize(),
-
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+            itemsIndexed(
+                itemState
+            )
 
 
-                    ) {
-
-                        items(
-                            itemStateFilm
-                        ) { index ->
-
-                            FilmItem(index,viewModel)
-                        }
-
-                    }
-                }
-
+            { index, genre ->
+                genreCard(selectedIndex, index, genre, viewModel)
 
             }
 
 
 
+
+            item {
+                Text(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    text = "Фильмы",
+                    modifier = Modifier.padding(16.dp),
+                    style = MyTextStyles.myTextStyleHeaderSecond
+
+                )
+            }
+
+            item {
+                LazyVerticalGrid(
+
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .height(1000.dp)
+                        .fillMaxSize(),
+
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+
+                ) {
+
+                    items(
+                        itemStateFilm
+                    ) { index ->
+
+                        FilmItem(index, viewModel)
+                    }
+
+                }
+            }
+
+
+        }
+
+
     }
-
-
 
 
     @Composable
@@ -342,6 +349,7 @@ class FilmFragment : Fragment() {
         viewModel: FilmFragmentViewModel
     ) {
         Card(
+            shape = RoundedCornerShape(0.dp),
             modifier = Modifier
                 .height(40.dp)
                 .fillMaxWidth()
@@ -388,9 +396,11 @@ class FilmFragment : Fragment() {
                 ) {
                     genre?.let {
                         Text(
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier
                                 .fillMaxWidth(),
                             text = it,
+                            style = MyTextStyles.myTextStyleGenreItem
                         )
                     }
                 }
@@ -409,7 +419,7 @@ class FilmFragment : Fragment() {
 
         Card(
 
-
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier
                 // .background(MaterialTheme.colorScheme.secondary)
@@ -440,7 +450,6 @@ class FilmFragment : Fragment() {
                             .size(0.dp, 222.dp)
                             .clip(RoundedCornerShape(4.dp)),
 
-
                         contentDescription = "Черный квадрат"
                     )
 
@@ -449,18 +458,12 @@ class FilmFragment : Fragment() {
                 Row {
                     item?.name?.let {
                         Text(
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             text = it,
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 20.sp,
-                                // fontFamily = FontFamily(Font(R.font.roboto_thin)),
-                                fontWeight = FontWeight(700),
-                                letterSpacing = 0.1.sp,
-                                color = Color(0xFF000000)
-                            )
+                            style = MyTextStyles.myTextStyleFilmItem
                         )
                     }
                 }
@@ -468,7 +471,6 @@ class FilmFragment : Fragment() {
         }
 
     }
-
 
 
     @Composable
@@ -482,8 +484,9 @@ class FilmFragment : Fragment() {
     }
 
     @Composable
-    fun ErrorSnackbar(message: String,
-                      onDismiss: () -> Unit
+    fun ErrorSnackbar(
+        message: String,
+        onDismiss: () -> Unit
     ) {
         Snackbar(
             action = {
@@ -505,9 +508,6 @@ class FilmFragment : Fragment() {
 
         findNavController().navigate(R.id.action_mainFragment_to_itemFragment, bundle)
     }
-
-
-
 
 
     @Preview(
