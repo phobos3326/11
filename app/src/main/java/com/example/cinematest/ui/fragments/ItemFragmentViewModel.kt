@@ -6,9 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinematest.entity.ModelCinema
 import com.example.cinematest.repository.RepositoryCinema
-import com.example.cinematest.useCase.ConnectivityUseCase
 import com.example.cinematest.useCase.UseCaseFilm
-import com.example.cinematest.useCase.getGenresUseCase
+import com.example.cinematest.useCase.GetGenresUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,10 +15,10 @@ import kotlinx.coroutines.launch
 
 class ItemFragmentViewModel(
     private val useCaseFilm: UseCaseFilm,
-    private val getGenresUseCase: getGenresUseCase,
+    private val getGenresUseCase: GetGenresUseCase,
     private val repositoryCinema: RepositoryCinema,
 
-):AndroidViewModel(Application()) {
+    ):AndroidViewModel(Application()) {
 
     private val _state = MutableStateFlow<State>(State.ColdStart)
     val state = _state.asStateFlow()

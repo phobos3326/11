@@ -456,7 +456,7 @@ class FilmFragment : Fragment() {
 
                 }
                 Row {
-                    item?.name?.let {
+                    item?.localizedName?.let {
                         Text(
                             color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier,

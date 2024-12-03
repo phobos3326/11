@@ -1,26 +1,30 @@
 package com.example.cinematest.useCase
 
+import androidx.compose.ui.text.capitalize
 import com.example.cinematest.repository.RepositoryCinema
 import java.util.Locale
 
-class getGenresUseCase(private val repositoryCinema: RepositoryCinema) {
-    private val finalList = mutableListOf<String?>(null)
+class GetGenresUseCase(private val repositoryCinema: RepositoryCinema) {
+    private var finalList:MutableList<String?> = mutableListOf()
+    var listGenres = mutableListOf<String?>()
     suspend fun getFilmGenre(): List<String?> {
-        val listGenres = mutableListOf<String?>()
+
         repositoryCinema.getFilm().films?.forEach {
             it.genres?.let { it1 ->
                 listGenres.addAll(it1)
             }
         }
 
-        val list = LinkedHashSet(listGenres).toMutableList()
-        for (i in 0..<list.size) {
-            list[i]?.let { capitalizeFirstLetter(it) }?.let { finalList.add(it) }
+
+
+
+        listGenres.forEach { it->
+           finalList.add(it?.let { it1 -> capitalizeFirstLetter(it1) })
+
         }
-        if (finalList.isNotEmpty()) {
-            finalList.removeAt(0)
-        }
-        return finalList
+
+
+        return  LinkedHashSet( finalList).toMutableList()
     }
 
 
