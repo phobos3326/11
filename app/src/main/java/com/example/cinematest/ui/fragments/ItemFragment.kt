@@ -173,11 +173,11 @@ class ItemFragment : Fragment() {
 
 
                     colors = TopAppBarColors(
-                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.tertiary,
+                        MaterialTheme.colorScheme.onTertiary,
+                        MaterialTheme.colorScheme.onTertiary,
                         MaterialTheme.colorScheme.onPrimary,
-                        MaterialTheme.colorScheme.onPrimary,
-                        MaterialTheme.colorScheme.onPrimary,
-                        Color.Blue,
+                        MaterialTheme.colorScheme.onTertiary,
 
                         ),
                     title = {
@@ -189,7 +189,13 @@ class ItemFragment : Fragment() {
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = filmDetail?.name.toString(),
+                                text = if (filmDetail?.localizedName == null){
+                                    ""
+                                } else{
+                                    filmDetail?.localizedName.toString()
+                                }
+                                ,
+                                color = MaterialTheme.colorScheme.onTertiary,
 
                                 style = MyTextStyles.myTextStyleHeader,
                                 modifier = Modifier.fillMaxWidth(),
@@ -294,10 +300,10 @@ class ItemFragment : Fragment() {
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
+                    color = MaterialTheme.colorScheme.surfaceTint,
+                    text = filmDetail?.genres?.joinToString(", ") + ", " + filmDetail?.year + " год",
 
-                    text = filmDetail?.genres?.joinToString(", ") + ", " + filmDetail?.year,
-
-                    style = MyTextStyles.myTextStyleFilmItem
+                    style = MyTextStyles.myTextStyleGenreItem
                 )
             }
 
@@ -334,7 +340,6 @@ class ItemFragment : Fragment() {
 
     }
 }
-
 
 
 @Composable
@@ -386,7 +391,7 @@ fun preview1() {
                 style = TextStyle(
                     fontSize = 26.sp,
                     lineHeight = 32.sp,
-                     fontFamily = FontFamily(Font(R.font.roboto_thin)),
+                    fontFamily = FontFamily(Font(R.font.roboto_thin)),
                     fontWeight = FontWeight(700),
                     letterSpacing = 0.1.sp,
                     color = Color(0xFF000000)
