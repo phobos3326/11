@@ -110,12 +110,12 @@ class FilmFragment : Fragment() {
 
             setContent {
                 val viewModel = koinViewModel<FilmFragmentViewModel>()
-                val darkTheme = isSystemInDarkTheme()
+                //val darkTheme = isSystemInDarkTheme()
 
 
 
                 CinemaTestTheme(
-                    darkTheme = darkTheme,
+                    darkTheme = false,
                     dynamicColor = false,
 
                     ) {

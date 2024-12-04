@@ -13,13 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color.White,
-    onPrimary = Color.Black,
+    primary = Navy,
+    onPrimary = Color.White,
     secondary = Yellow,
-    onSecondary = Color.Black,
-    tertiary =  Navy,
-    onTertiary = Color.White,
-    surfaceTint = Color.Gray
+   // tertiary = Pink80,
 
 
 )

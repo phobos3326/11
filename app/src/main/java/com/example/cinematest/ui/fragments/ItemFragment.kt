@@ -118,9 +118,9 @@ class ItemFragment : Fragment() {
                         viewModel.getFilmId(id)
                     }
                 }
-                val darkTheme = isSystemInDarkTheme()
+
                 CinemaTestTheme(
-                    darkTheme = darkTheme,
+                    darkTheme = false,
                     dynamicColor = false,
                 ) {
                     filmScreen(viewModel)
