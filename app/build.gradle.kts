@@ -122,6 +122,8 @@ dependencies {
 
     //Glide
     implementation (libs.glide)
+    runtimeOnly(libs.compose)
+    implementation(libs.landscapist.glide)
 
     // Skip this if you don't want to use integration libraries or configure Glide.
     annotationProcessor (libs.compiler)
