@@ -13,10 +13,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Navy,
-    onPrimary = Color.White,
+    primary = Color.White,
+    onPrimary = Color.Black,
     secondary = Yellow,
-   // tertiary = Pink80,
+    onSecondary = Color.Black,
+    tertiary =  Navy,
+    onTertiary = Color.White,
+    surfaceTint = Color.Gray
 
 
 )
@@ -33,9 +36,10 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun CinemaTestTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean  = false,
+    //darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
