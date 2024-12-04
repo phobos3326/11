@@ -9,7 +9,12 @@ class GetGenresUseCase(private val repositoryCinema: RepositoryCinema) {
     var listGenres = mutableListOf<String?>()
     suspend fun getFilmGenre(): List<String?> {
 
+
+
         repositoryCinema.getFilm().films?.forEach {
+
+
+
             it.genres?.let { it1 ->
                 listGenres.addAll(it1)
             }

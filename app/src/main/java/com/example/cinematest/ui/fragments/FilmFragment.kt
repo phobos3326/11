@@ -80,8 +80,10 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Shape
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.example.cinematest.ui.theme.MyTextStyles
 import kotlinx.coroutines.launch
@@ -148,31 +150,20 @@ class FilmFragment : Fragment() {
 
         val snackbarHostState = remember { SnackbarHostState() }
 
-        /* LaunchedEffect(state) {
-             if (state is State.Error){
-                 val result =snackbarHostState.showSnackbar(
-                         message = "Snackbar",
-                 actionLabel = "Action",
-                 // Defaults to SnackbarDuration.Short
-                 duration = SnackbarDuration.Indefinite
-                 )
-                 when (result) {
-                     SnackbarResult.ActionPerformed -> {
-                        viewModel.start()
-                     }
-                     SnackbarResult.Dismissed -> {
-                         viewModel.start()
-                     }
-                 }
-             }
-         }
- */
+
 
 
         Scaffold(
+
             containerColor = MaterialTheme.colorScheme.primary,
+
             snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
+                SnackbarHost(hostState = snackbarHostState){
+                    ErrorSnackbar(
+                        onDismiss = { viewModel.start() },
+                        snackbarHostState = snackbarHostState
+                    )
+                }
 
             },
 
@@ -211,11 +202,12 @@ class FilmFragment : Fragment() {
                     is State.Completed -> FilmScreen(title, viewModel, listState, innerpadding)
                     is State.Wait -> LoadingIndicator()
                     is State.Error -> {
-                        lifecycleScope.launch {
+                       lifecycleScope.launch {
                             val result = snackbarHostState.showSnackbar(
-                                message = "Snackbar",
-                                actionLabel = "Action",
-                                // Defaults to SnackbarDuration.Short
+                                message = "Ошибка подключения сети",
+                                actionLabel = "ПОВТОРИТЬ",
+
+
                                 duration = SnackbarDuration.Indefinite
                             )
                             when (result) {
@@ -227,6 +219,8 @@ class FilmFragment : Fragment() {
                                     //viewModel.start()
                                 }
                             }
+
+
                         }
                     }
 
@@ -479,24 +473,51 @@ class FilmFragment : Fragment() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.secondary
+            )
         }
     }
 
     @Composable
     fun ErrorSnackbar(
-        message: String,
-        onDismiss: () -> Unit
-    ) {
-        Snackbar(
-            action = {
-                TextButton(onClick = onDismiss) {
-                    Text("Попробовать снова")
+
+        onDismiss: () -> Unit,
+        snackbarHostState: SnackbarHostState,
+
+        ) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            Modifier.fillMaxWidth(),
+            snackbar = { data ->
+
+                Snackbar(
+                    modifier = Modifier
+                        .padding(start = 8.dp, end = 8.dp),
+                    contentColor = MaterialTheme.colorScheme.secondary,
+                    action = {
+                        data?.  let { _ ->
+                            TextButton(onClick = {
+
+                                data.performAction()
+                                onDismiss
+                            }) {
+                                Text(
+                                    text = "ПОВТОРИТЬ",
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    }
+                ) {
+
+                    Text(
+                        text = "Ошибка подключения сети",
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
                 }
             }
-        ) {
-            Text(text = message)
-        }
+        )
     }
 
     private fun onItemDetailClick(item: ModelCinema.Film?) {

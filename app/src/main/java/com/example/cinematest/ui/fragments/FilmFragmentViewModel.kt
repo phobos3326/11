@@ -9,10 +9,12 @@ import com.example.cinematest.repository.RepositoryCinema
 import com.example.cinematest.useCase.ConnectivityUseCase
 import com.example.cinematest.useCase.UseCaseFilm
 import com.example.cinematest.useCase.GetGenresUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class FilmFragmentViewModel(
     private val useCaseFilm: UseCaseFilm,
@@ -43,14 +45,17 @@ class FilmFragmentViewModel(
     init {
         viewModelScope.launch {
             start()
+            isConnect
         }
     }
 
 
     fun start() {
         viewModelScope.launch {
+            _state.value = State.Wait
             isConnect.collect { isOnline ->
                 if(isOnline){
+                    _state.value = State.Wait
                     runCatching {
                         repositoryCinema.getResponse().also { response ->
                             Log.e("TAG", "$response, ${_state.value}")
@@ -100,7 +105,7 @@ class FilmFragmentViewModel(
         val filmsList = getFilm()
         if (genre__ != null) {
             val filteredList = filmsList?.filter {
-                it?.genres!!.contains(genre__)
+                it?.genres!!.contains(genre__!!.lowercase(Locale.getDefault()))
             }
             if (filteredList != null) {
                 _films.value = filteredList
@@ -115,6 +120,9 @@ class FilmFragmentViewModel(
     private suspend fun getFilmGenre() {
         _genre.value = getGenresUseCase.getFilmGenre()
     }
+
+
+
 
 
     suspend fun getFilmId(id: Int) {

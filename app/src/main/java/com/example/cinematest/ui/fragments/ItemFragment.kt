@@ -60,6 +60,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -189,6 +190,8 @@ class ItemFragment : Fragment() {
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
                                 text = if (filmDetail?.localizedName == null){
                                     ""
                                 } else{
@@ -288,10 +291,13 @@ class ItemFragment : Fragment() {
             Row(
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                filmDetail?.name?.let {
+                filmDetail?.localizedName?.let {
                     Text(
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                         text = it,
-                        style = MyTextStyles.myTextStyleFilmName
+                        style = MyTextStyles.myTextStyleFilmName,
+
                     )
                 }
             }
@@ -348,7 +354,9 @@ fun LoadingIndicator() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            color = MaterialTheme.colorScheme.secondary
+        )
     }
 }
 
