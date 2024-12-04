@@ -1,6 +1,5 @@
 package com.example.cinematest.useCase
 
-import androidx.compose.ui.text.capitalize
 import com.example.cinematest.repository.RepositoryCinema
 import java.util.Locale
 

@@ -9,7 +9,6 @@ import com.example.cinematest.repository.RepositoryCinema
 import com.example.cinematest.useCase.ConnectivityUseCase
 import com.example.cinematest.useCase.UseCaseFilm
 import com.example.cinematest.useCase.GetGenresUseCase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +36,7 @@ class FilmFragmentViewModel(
     private var _genre = MutableStateFlow<List<String?>>(emptyList())
     var genre = _genre.asStateFlow()
 
-    val isConnect = connectivityUseCase.isConnected as StateFlow<Boolean>
+    private val isConnect = connectivityUseCase.isConnected as StateFlow<Boolean>
 
 
     private var genre__: String? = null
@@ -125,13 +124,7 @@ class FilmFragmentViewModel(
 
 
 
-    suspend fun getFilmId(id: Int) {
-        useCaseFilm.execFilms()?.forEach { it ->
-            if (it?.id == id) {
-                _filmId.value = it
-            }
-        }
-    }
+
 }
 
 

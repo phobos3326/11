@@ -71,7 +71,6 @@ import coil.compose.rememberImagePainter
 import com.example.cinematest.R
 import com.example.cinematest.ui.theme.CinemaTestTheme
 import com.example.cinematest.ui.theme.MyTextStyles
-import com.example.cinematest.ui.theme.Typography
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -195,7 +194,7 @@ class ItemFragment : Fragment() {
                                 text = if (filmDetail?.localizedName == null){
                                     ""
                                 } else{
-                                    filmDetail?.localizedName.toString()
+                                    filmDetail.localizedName.toString()
                                 }
                                 ,
                                 color = MaterialTheme.colorScheme.onTertiary,
